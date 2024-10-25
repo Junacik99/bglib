@@ -12,11 +12,8 @@ import androidx.core.app.ActivityCompat
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
-import org.opencv.core.MatOfPoint
 import org.opencv.core.MatOfPoint2f
-import org.opencv.core.Point
 import org.opencv.core.Scalar
-import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import androidx.core.content.ContextCompat as ContextCompat1
 
@@ -104,50 +101,12 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCameraViewStopped() {}
 
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
-        val mat = inputFrame.rgba()
+        val frame = inputFrame.rgba()
+        val cd = CardDetection()
 
-        val contours = findContoursInImg(mat)
+        cd.detectRectCanny(frame)
 
-        // Draw rectangle around contours
-        for (contour in contours){
-            val approx = MatOfPoint2f()
-            val contour2f = MatOfPoint2f(*contour.toArray())
-
-            // approximate contour
-            Imgproc.approxPolyDP(contour2f, approx, Imgproc.arcLength(contour2f, true)*0.02, true)
-
-            // Check if 4 points
-            if (approx.total() == 4L){
-                // Draw rectangle
-                val points = approx.toArray()
-                for (i in 0 until 3){
-                    Imgproc.line(mat, points[i], points[(i+1)%4], Scalar(75.0, 0.0, 130.0), 3)
-                }
-            }
-
-        }
-
-        return mat
+        return frame
     }
-}
-
-fun findContoursInImg(inputImg: Mat) : MutableList<MatOfPoint> {
-    // Convert the input frame to grayscale
-    val gray = Mat()
-    Imgproc.cvtColor(inputImg, gray, Imgproc.COLOR_RGBA2GRAY)
-
-    // Apply Gauss blur
-    Imgproc.GaussianBlur(gray, gray, Size(5.0,5.0), 0.0)
-
-    // Canny edge detection
-    val edges = Mat()
-    Imgproc.Canny(gray, edges, 100.0, 200.0)
-
-    // Contours
-    val contours = mutableListOf<MatOfPoint>()
-    val hierarchy = Mat()
-    Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
-
-    return contours
 }
 
