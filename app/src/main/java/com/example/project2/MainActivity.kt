@@ -1,31 +1,74 @@
 package com.example.project2
 
+import android.app.Activity
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
+import android.os.Build
 import org.opencv.android.CameraActivity
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import android.os.Bundle
 import android.util.Log
+import android.util.SparseIntArray
+import android.view.Surface
 import android.view.SurfaceView
 import android.view.WindowManager
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
-import org.opencv.core.MatOfPoint2f
-import org.opencv.core.Scalar
-import org.opencv.imgproc.Imgproc
 import androidx.core.content.ContextCompat as ContextCompat1
 
 class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
     private val TAG = "OCVSample::Activity"
     private lateinit var mOpenCvCameraView: CameraBridgeViewBase
+    private val cd = CardDetection()
+    lateinit var textView: TextView
+    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+    private val ORIENTATIONS = SparseIntArray()
+    init {
+        ORIENTATIONS.append(Surface.ROTATION_0, 0)
+        ORIENTATIONS.append(Surface.ROTATION_90, 90)
+        ORIENTATIONS.append(Surface.ROTATION_180, 180)
+        ORIENTATIONS.append(Surface.ROTATION_270, 270)
+    }
+
+    /**
+     * Get the angle by which an image must be rotated given the device's current
+     * orientation.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Throws(CameraAccessException::class)
+    private fun getRotationCompensation(cameraId: String, activity: Activity, isFrontFacing: Boolean): Int {
+        // Get the device's current rotation relative to its "native" orientation.
+        // Then, from the ORIENTATIONS table, look up the angle the image must be
+        // rotated to compensate for the device's rotation.
+        val deviceRotation = activity.windowManager.defaultDisplay.rotation
+        var rotationCompensation = ORIENTATIONS.get(deviceRotation)
+
+        // Get the device's sensor orientation.
+        val cameraManager = activity.getSystemService(CAMERA_SERVICE) as CameraManager
+        val sensorOrientation = cameraManager
+            .getCameraCharacteristics(cameraId)
+            .get(CameraCharacteristics.SENSOR_ORIENTATION)!!
+
+        if (isFrontFacing) {
+            rotationCompensation = (sensorOrientation + rotationCompensation) % 360
+        } else { // back-facing
+            rotationCompensation = (sensorOrientation - rotationCompensation + 360) % 360
+        }
+        return rotationCompensation
+    }
 
     private fun initCamera(){
-        // init view
-        setContentView(R.layout.activity_main)
-
         mOpenCvCameraView = findViewById(R.id.surface_view)
         mOpenCvCameraView.visibility = SurfaceView.VISIBLE
         mOpenCvCameraView.setCvCameraViewListener(this)
@@ -48,6 +91,12 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "called onCreate")
+
+        // init view
+        setContentView(R.layout.activity_main)
+
+        // Text view bind
+        textView = findViewById(R.id.cardText)
 
         // add FLAG_KEEP_SCREEN_ON
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -102,9 +151,16 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
-        val cd = CardDetection()
 
         cd.detectRectCanny(frame)
+
+        val rotation = getRotationCompensation("0", this, false)
+
+        cd.detectText(frame, rotation, recognizer) { detectedText ->
+            textView.text = detectedText
+            Log.i(TAG, detectedText)
+        }
+
 
         return frame
     }

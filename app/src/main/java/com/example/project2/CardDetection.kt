@@ -1,6 +1,10 @@
 package com.example.project2
 
-import android.gesture.OrientedBoundingBox
+import android.graphics.Bitmap
+import com.google.android.gms.tasks.Task
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
+import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.MatOfPoint2f
@@ -8,6 +12,7 @@ import org.opencv.core.Rect
 import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
+import com.google.mlkit.vision.text.TextRecognizer
 
 class CardDetection {
 
@@ -95,7 +100,33 @@ class CardDetection {
         binary.release()
     }
 
+
+
+    fun detectText(frame: Mat, rotation: Int, textRecognizer: TextRecognizer, onResult: (String) -> Unit) {
+        // create bitmap
+        var gray = Mat()
+        Imgproc.cvtColor(frame, gray, Imgproc.COLOR_RGBA2GRAY, 4)
+        val bmp = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(gray, bmp)
+
+        // Convert to image
+        val image = InputImage.fromBitmap(bmp, rotation)
+
+        val result = textRecognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                // Task completed successfully
+                onResult(visionText.text)
+            }
+            .addOnFailureListener { e: Exception ->
+                // Task failed with an exception
+                onResult("Uh oh: ${e.message}")
+            }
+
+    }
+
     // TODO:
-    // thresholding
-    // clustering
+    // clustering (K means?)
+    // return only card for further processing
+    // create card class with various properties like text, picture, number, etc on different locations
+    // Arrange cards in matrix
 }
