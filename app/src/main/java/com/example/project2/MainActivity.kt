@@ -1,5 +1,6 @@
 package com.example.project2
 
+import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraAccessException
@@ -16,14 +17,22 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.launch
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.semantics.text
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
 import androidx.core.content.ContextCompat as ContextCompat1
+import kotlinx.coroutines.launch
 
 class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
@@ -32,6 +41,8 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     private val cd = CardDetection()
     lateinit var textView: TextView
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private val CAMERA_ID = "0"
+    private val coroutineScope = MainScope()
 
     private val ORIENTATIONS = SparseIntArray()
     init {
@@ -76,7 +87,7 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     }
 
     private fun checkCamPermission(): Boolean {
-        if (ContextCompat1.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat1.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Permission was not granted yet")
             return false
         }
@@ -119,7 +130,7 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
         } else {
             // request permission
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 100)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100)
         }
 
 
@@ -143,6 +154,7 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onDestroy() {
         super.onDestroy()
         mOpenCvCameraView.disableView()
+        coroutineScope.cancel()
     }
 
     override fun onCameraViewStarted(width: Int, height: Int) {}
@@ -152,15 +164,36 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
 
-        cd.detectRectCanny(frame)
+        val rectangles = cd.detectRectOtsu(frame)
 
-        val rotation = getRotationCompensation("0", this, false)
+        val rotation = getRotationCompensation(CAMERA_ID, this, false)
 
-        cd.detectText(frame, rotation, recognizer) { detectedText ->
-            textView.text = detectedText
-            Log.i(TAG, detectedText)
+
+        coroutineScope.launch {
+            try {
+                val cardTextBuilder = StringBuilder()
+                for (rect in rectangles) {
+                    val subframe = frame.submat(rect)
+                    val detectedText = withContext(Dispatchers.IO) {
+                        cd.detectTextSuspend(subframe, rotation, recognizer)
+                    }
+                    cardTextBuilder.append(detectedText).append("\n")
+
+                }
+                withContext(Dispatchers.Main) {
+//                    Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
+                    textView.text = cardTextBuilder.toString()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during text recognition: ${e.message}")
+                // Handle the error
+            }
         }
-
+        // TODO: this works better than coroutines and rects
+        // Possible solution: use coordinates of found text to assign to found card
+//        cd.detectText(frame, rotation, recognizer) { detectedText ->
+//            textView.text = detectedText
+//        }
 
         return frame
     }

@@ -13,16 +13,17 @@ import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import com.google.mlkit.vision.text.TextRecognizer
+import kotlin.coroutines.suspendCoroutine
 
 class CardDetection {
 
     // Draw rectangle around contours inside the input image
     private fun drawRectangle(
-        frame:Mat,
-        contours:MutableList<MatOfPoint>,
-        retBoundingBoxes:Boolean=false,
-        contourColor:Scalar=Scalar(0.0, 255.0, 0.0),
-        boundingBoxColor:Scalar=Scalar(255.0, 0.0, 0.0),
+        frame : Mat,
+        contours : MutableList<MatOfPoint>,
+        retBoundingBoxes : Boolean=false,
+        contourColor : Scalar=Scalar(0.0, 255.0, 0.0),
+        boundingBoxColor : Scalar=Scalar(255.0, 0.0, 0.0),
     ) : MutableList<Rect>
     {
         val boundingBoxes = mutableListOf<Rect>()
@@ -63,7 +64,7 @@ class CardDetection {
     }
 
     // Detect rectangle using Canny edge detection
-    fun detectRectCanny(frame: Mat) {
+    fun detectRectCanny(frame: Mat): MutableList<Rect> {
         val gray = preprocess(frame)
 
         // Canny edge detection
@@ -74,14 +75,16 @@ class CardDetection {
         val contours = mutableListOf<MatOfPoint>()
         Imgproc.findContours(edges, contours, Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
 
-        drawRectangle(frame, contours)
+        val rectangles = drawRectangle(frame, contours)
 
         // Release resources
         gray.release()
+
+        return rectangles
     }
 
     // Detect rectangle using Otsu method
-    fun detectRectOtsu(frame: Mat) {
+    fun detectRectOtsu(frame: Mat): MutableList<Rect> {
         // Convert to grayscale and apply Gauss blur
         val gray = preprocess(frame)
 
@@ -93,11 +96,13 @@ class CardDetection {
         val contours = mutableListOf<MatOfPoint>()
         Imgproc.findContours(binary, contours, Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
 
-        drawRectangle(frame, contours)
+        val rectangles = drawRectangle(frame, contours, true)
 
         // Release resources
         gray.release()
         binary.release()
+
+        return rectangles
     }
 
 
@@ -124,9 +129,16 @@ class CardDetection {
 
     }
 
+    // Suspend function wrapper to detect text
+    suspend fun detectTextSuspend(frame: Mat, rotation: Int, textRecognizer: TextRecognizer): String =
+        suspendCoroutine { continuation ->
+            detectText(frame, rotation, textRecognizer) { text ->
+                continuation.resumeWith(Result.success(text))
+            }
+        }
+
     // TODO:
     // clustering (K means?)
-    // return only card for further processing
     // create card class with various properties like text, picture, number, etc on different locations
     // Arrange cards in matrix
 }
