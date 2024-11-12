@@ -6,9 +6,6 @@ import android.content.pm.PackageManager
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.os.Build
-import org.opencv.android.CameraActivity
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import android.os.Bundle
 import android.util.Log
 import android.util.SparseIntArray
@@ -17,22 +14,26 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.launch
-import androidx.annotation.RequiresApi
-import androidx.compose.ui.semantics.text
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.lifecycleScope
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.googlecode.tesseract.android.TessBaseAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.opencv.android.CameraActivity
 import org.opencv.android.CameraBridgeViewBase
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import androidx.core.content.ContextCompat as ContextCompat1
-import kotlinx.coroutines.launch
+
 
 class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
@@ -43,6 +44,7 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private val CAMERA_ID = "0"
     private val coroutineScope = MainScope()
+    private var baseAPI : TessBaseAPI? = null
 
     private val ORIENTATIONS = SparseIntArray()
     init {
@@ -52,11 +54,7 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
         ORIENTATIONS.append(Surface.ROTATION_270, 270)
     }
 
-    /**
-     * Get the angle by which an image must be rotated given the device's current
-     * orientation.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    // Get the angle by which an image must be rotated given the device's current orientation
     @Throws(CameraAccessException::class)
     private fun getRotationCompensation(cameraId: String, activity: Activity, isFrontFacing: Boolean): Int {
         // Get the device's current rotation relative to its "native" orientation.
@@ -133,6 +131,10 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100)
         }
 
+        // Tess two: Copy tess data
+        val language = "slk"
+        val dataName = "$language.traineddata"
+        baseAPI = cd.initTessTwo(this, dataName, language, TAG)
 
 
     }
@@ -168,27 +170,33 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
         val rotation = getRotationCompensation(CAMERA_ID, this, false)
 
-
-        coroutineScope.launch {
-            try {
-                val cardTextBuilder = StringBuilder()
-                for (rect in rectangles) {
-                    val subframe = frame.submat(rect)
-                    val detectedText = withContext(Dispatchers.IO) {
-                        cd.detectTextSuspend(subframe, rotation, recognizer)
-                    }
-                    cardTextBuilder.append(detectedText).append("\n")
-
-                }
-                withContext(Dispatchers.Main) {
-//                    Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
-                    textView.text = cardTextBuilder.toString()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error during text recognition: ${e.message}")
-                // Handle the error
+        cd.detectTextTessTwo(frame, baseAPI) { detectedText ->
+            runOnUiThread {
+                textView.text = detectedText
             }
-        }
+        } // TODO: this doesn't work
+        // Loads only the first frame and then freezes
+
+//        coroutineScope.launch {
+//            try {
+//                val cardTextBuilder = StringBuilder()
+//                for (rect in rectangles) {
+//                    val subframe = frame.submat(rect)
+//                    val detectedText = withContext(Dispatchers.IO) {
+//                        cd.detectTextSuspend(subframe, rotation, recognizer)
+//                    }
+//                    cardTextBuilder.append(detectedText).append("\n")
+//
+//                }
+//                withContext(Dispatchers.Main) {
+////                    Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
+//                    textView.text = cardTextBuilder.toString()
+//                }
+//            } catch (e: Exception) {
+//                Log.e(TAG, "Error during text recognition: ${e.message}")
+//                // Handle the error
+//            }
+//        }
         // TODO: this works better than coroutines and rects
         // Possible solution: use coordinates of found text to assign to found card
 //        cd.detectText(frame, rotation, recognizer) { detectedText ->
@@ -197,5 +205,7 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
         return frame
     }
+
+
 }
 

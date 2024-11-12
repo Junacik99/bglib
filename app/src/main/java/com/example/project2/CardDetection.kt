@@ -1,9 +1,11 @@
 package com.example.project2
 
+import android.content.Context
 import android.graphics.Bitmap
-import com.google.android.gms.tasks.Task
+import android.util.Log
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
+import com.google.mlkit.vision.text.TextRecognizer
+import com.googlecode.tesseract.android.TessBaseAPI
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
@@ -12,10 +14,15 @@ import org.opencv.core.Rect
 import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
-import com.google.mlkit.vision.text.TextRecognizer
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import kotlin.coroutines.suspendCoroutine
 
 class CardDetection {
+
+    private var baseAPI : TessBaseAPI? = null
 
     // Draw rectangle around contours inside the input image
     private fun drawRectangle(
@@ -149,11 +156,56 @@ class CardDetection {
             }
         }
 
-    fun detectTextTessTwo(frame: Mat, rotation: Int, onResult: (String) -> Unit){
+
+    fun initTessTwo(
+        context: Context,
+        dataName : String,
+        lang : String,
+        TAG : String): TessBaseAPI {
+        // Copy tess data
+        var out: OutputStream? = null
+        try {
+            val inputStream: InputStream = context.assets.open(dataName)
+            val tessPath = "${context.getExternalFilesDir(null)}"+"/tessdata/"
+            val tessFolder = File(tessPath)
+            if (!tessFolder.exists()) tessFolder.mkdir()
+            val tessData = "$tessPath/$dataName"
+            val tessFile = File(tessData)
+            if (!tessFile.exists()) {
+                out = FileOutputStream(tessData)
+                val buffer = ByteArray(1024)
+                var read = inputStream.read(buffer)
+                while (read != -1) {
+                    out.write(buffer, 0, read)
+                    read = inputStream.read(buffer)
+                }
+                Log.d(TAG, "Finished copy tess file  ")
+            } else Log.d(TAG, " tess file exist  ")
+        } catch (e: java.lang.Exception) {
+            Log.e(TAG, "couldn't copy with the following error : $e")
+        } finally {
+            try {
+                out?.close()
+            } catch (exx: java.lang.Exception) {
+                Log.e(TAG, "couldn't close the stream with the following error : $exx")
+            }
+        }
+
+        val baseAPI = TessBaseAPI()
+        val dataPath = context.getExternalFilesDir(null)?.absolutePath
+        baseAPI.init(dataPath, lang)
+
+        return baseAPI
+    }
+
+    fun detectTextTessTwo(frame: Mat, api: TessBaseAPI?, onResult: (String) -> Unit){
         // create bitmap
         val bmp = mat2bitmap(frame)
 
+        api!!.setImage(bmp)
+        val text = api.utF8Text
 
+        onResult(text)
     }
 
     // TODO:
