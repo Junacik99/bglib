@@ -12,6 +12,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseMlVision = "24.1.0"
 playServicesMlkitTextRecognitionCommon = "19.1.0"
 playServicesMlkitTextRecognition = "19.0.1"
+tessTwo = "9.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +32,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-ml-vision = { group = "com.google.firebase", name = "firebase-ml-vision", version.ref = "firebaseMlVision" }
 play-services-mlkit-text-recognition-common = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-common", version.ref = "playServicesMlkitTextRecognitionCommon" }
 play-services-mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
+tess-two = { module = "com.rmtheis:tess-two", version.ref = "tessTwo" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

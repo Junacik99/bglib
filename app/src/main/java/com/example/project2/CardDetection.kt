@@ -52,6 +52,10 @@ class CardDetection {
         return boundingBoxes
     }
 
+    /*****************************************************************************************/
+    /* Rectangle detection */
+
+    // Preprocess the input image for edge detection
     private fun preprocess(inputImg: Mat) : Mat {
         // Convert the input frame to grayscale
         val gray = Mat()
@@ -105,14 +109,22 @@ class CardDetection {
         return rectangles
     }
 
+    /*****************************************************************************************/
+    /* OCR */
 
+    // Convert Mat to Bitmap
+    fun mat2bitmap(mat: Mat): Bitmap {
+        // create bitmap
+        var gray = Mat()
+        Imgproc.cvtColor(mat, gray, Imgproc.COLOR_RGBA2GRAY, 4)
+        val bmp = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(gray, bmp)
+        return bmp
+    }
 
     fun detectText(frame: Mat, rotation: Int, textRecognizer: TextRecognizer, onResult: (String) -> Unit) {
         // create bitmap
-        var gray = Mat()
-        Imgproc.cvtColor(frame, gray, Imgproc.COLOR_RGBA2GRAY, 4)
-        val bmp = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(gray, bmp)
+        val bmp = mat2bitmap(frame)
 
         // Convert to image
         val image = InputImage.fromBitmap(bmp, rotation)
@@ -136,6 +148,13 @@ class CardDetection {
                 continuation.resumeWith(Result.success(text))
             }
         }
+
+    fun detectTextTessTwo(frame: Mat, rotation: Int, onResult: (String) -> Unit){
+        // create bitmap
+        val bmp = mat2bitmap(frame)
+
+
+    }
 
     // TODO:
     // clustering (K means?)

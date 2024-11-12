@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(project(":openCV"))
 //    implementation(libs.firebase.ml.vision)
+    implementation(libs.tess.two)
     implementation(libs.play.services.mlkit.text.recognition.common)
     implementation(libs.play.services.mlkit.text.recognition)
     testImplementation(libs.junit)
