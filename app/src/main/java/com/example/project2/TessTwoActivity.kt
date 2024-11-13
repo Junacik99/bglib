@@ -169,7 +169,7 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
 
-        // Object Detection in a separate thread or using Coroutines
+        // Object Detection using Coroutines
         CoroutineScope(Dispatchers.Default).launch {
             val rectangles = cd.detectRectOtsu(frame.clone()) // Clone frame to avoid concurrency issues
             // Process rectangles (e.g., draw bounding boxes) on the UI thread
