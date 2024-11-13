@@ -28,14 +28,10 @@ import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
 import androidx.core.content.ContextCompat as ContextCompat1
 
 
-class MainActivity : CameraActivity(), CvCameraViewListener2 {
+class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
 
     private val TAG = "OCVSample::Activity"
     private lateinit var mOpenCvCameraView: CameraBridgeViewBase
@@ -170,33 +166,33 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
         val rotation = getRotationCompensation(CAMERA_ID, this, false)
 
-        cd.detectTextTessTwo(frame, baseAPI) { detectedText ->
-            runOnUiThread {
-                textView.text = detectedText
-            }
-        } // TODO: this doesn't work
+//        cd.detectTextTessTwo(frame, baseAPI) { detectedText ->
+//            runOnUiThread {
+//                textView.text = detectedText
+//            }
+//        } // TODO: this doesn't work
         // Loads only the first frame and then freezes
 
-//        coroutineScope.launch {
-//            try {
-//                val cardTextBuilder = StringBuilder()
-//                for (rect in rectangles) {
-//                    val subframe = frame.submat(rect)
-//                    val detectedText = withContext(Dispatchers.IO) {
-//                        cd.detectTextSuspend(subframe, rotation, recognizer)
-//                    }
-//                    cardTextBuilder.append(detectedText).append("\n")
-//
-//                }
-//                withContext(Dispatchers.Main) {
-////                    Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
-//                    textView.text = cardTextBuilder.toString()
-//                }
-//            } catch (e: Exception) {
-//                Log.e(TAG, "Error during text recognition: ${e.message}")
-//                // Handle the error
-//            }
-//        }
+        coroutineScope.launch {
+            try {
+                val cardTextBuilder = StringBuilder()
+                for (rect in rectangles) {
+                    val subframe = frame.submat(rect)
+                    val detectedText = withContext(Dispatchers.IO) {
+                        cd.detectTextSuspend(subframe, rotation, recognizer)
+                    }
+                    cardTextBuilder.append(detectedText).append("\n")
+
+                }
+                withContext(Dispatchers.Main) {
+//                    Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
+                    textView.text = cardTextBuilder.toString()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during text recognition: ${e.message}")
+                // Handle the error
+            }
+        }
         // TODO: this works better than coroutines and rects
         // Possible solution: use coordinates of found text to assign to found card
 //        cd.detectText(frame, rotation, recognizer) { detectedText ->
