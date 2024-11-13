@@ -14,10 +14,13 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.launch
+import androidx.compose.ui.semantics.text
 import androidx.core.app.ActivityCompat
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.googlecode.tesseract.android.TessBaseAPI
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -166,18 +169,24 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
 
-        val rectangles = cd.detectRectOtsu(frame)
-
-        val rotation = getRotationCompensation(CAMERA_ID, this, false)
-
-        cd.detectTextTessTwo(frame, baseAPI) { detectedText ->
-            runOnUiThread {
-                textView.text = detectedText
+        // Object Detection in a separate thread or using Coroutines
+        CoroutineScope(Dispatchers.Default).launch {
+            val rectangles = cd.detectRectOtsu(frame.clone()) // Clone frame to avoid concurrency issues
+            // Process rectangles (e.g., draw bounding boxes) on the UI thread
+            withContext(Dispatchers.Main) {
+                // ... draw rectangles on frame ...
             }
-        } // TODO: this doesn't work
-        // Loads only the first frame and then freezes
+        }
 
-
+        // Text Recognition using Coroutines
+        // TODO: Tess Two is extremely slow
+        CoroutineScope(Dispatchers.Default).launch {
+            withContext(Dispatchers.Main) {
+                cd.detectTextTessTwo(frame.clone(), baseAPI) { detectedText ->
+                    textView.text = detectedText
+                }
+            }
+        }
 
         return frame
     }
