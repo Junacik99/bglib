@@ -20,7 +20,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import kotlin.coroutines.suspendCoroutine
 
-class CardDetection {
+class CustomClassCardDetection {
     companion object {
         private var baseAPI : TessBaseAPI? = null
 
@@ -125,6 +125,6 @@ class CardDetection {
 
     // TODO:
     // clustering (K means?)
-    // create card DATA class with various properties like text, picture, number, etc on different locations
+    // create card class with various properties like text, picture, number, etc on different locations
     // Arrange cards in matrix
 }
