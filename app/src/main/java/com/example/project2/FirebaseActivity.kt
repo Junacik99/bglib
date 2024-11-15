@@ -15,9 +15,9 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.project2.TextDetection.Companion.detectTextSuspend
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.googlecode.tesseract.android.TessBaseAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -40,7 +40,6 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private val CAMERA_ID = "0"
     private val coroutineScope = MainScope()
-    private var baseAPI : TessBaseAPI? = null
 
     private val ORIENTATIONS = SparseIntArray()
     init {
@@ -127,11 +126,6 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100)
         }
 
-        // Tess two: Copy tess data
-        val language = "slk"
-        val dataName = "$language.traineddata"
-        baseAPI = cd.initTessTwo(this, dataName, language, TAG)
-
 
     }
 
@@ -166,26 +160,19 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
 
         val rotation = getRotationCompensation(CAMERA_ID, this, false)
 
-//        cd.detectTextTessTwo(frame, baseAPI) { detectedText ->
-//            runOnUiThread {
-//                textView.text = detectedText
-//            }
-//        } // TODO: this doesn't work
-        // Loads only the first frame and then freezes
-
         coroutineScope.launch {
             try {
                 val cardTextBuilder = StringBuilder()
                 for (rect in rectangles) {
                     val subframe = frame.submat(rect)
                     val detectedText = withContext(Dispatchers.IO) {
-                        cd.detectTextSuspend(subframe, rotation, recognizer)
+                        detectTextSuspend(subframe, rotation, recognizer)
                     }
                     cardTextBuilder.append(detectedText).append("\n")
 
                 }
                 withContext(Dispatchers.Main) {
-//                    Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
+                    // Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
                     textView.text = cardTextBuilder.toString()
                 }
             } catch (e: Exception) {
@@ -193,7 +180,7 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
                 // Handle the error
             }
         }
-        // TODO: this works better than coroutines and rects
+        // TODO: the following works better than coroutines and rects
         // Possible solution: use coordinates of found text to assign to found card
 //        cd.detectText(frame, rotation, recognizer) { detectedText ->
 //            textView.text = detectedText

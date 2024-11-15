@@ -14,9 +14,9 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.launch
-import androidx.compose.ui.semantics.text
 import androidx.core.app.ActivityCompat
+import com.example.project2.TextDetection.Companion.detectTextTessTwo
+import com.example.project2.TextDetection.Companion.initTessTwo
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.googlecode.tesseract.android.TessBaseAPI
@@ -44,8 +44,6 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
     private lateinit var mOpenCvCameraView: CameraBridgeViewBase
     private val cd = CardDetection()
     lateinit var textView: TextView
-    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-    private val CAMERA_ID = "0"
     private val coroutineScope = MainScope()
     private var baseAPI : TessBaseAPI? = null
 
@@ -55,29 +53,6 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
         ORIENTATIONS.append(Surface.ROTATION_90, 90)
         ORIENTATIONS.append(Surface.ROTATION_180, 180)
         ORIENTATIONS.append(Surface.ROTATION_270, 270)
-    }
-
-    // Get the angle by which an image must be rotated given the device's current orientation
-    @Throws(CameraAccessException::class)
-    private fun getRotationCompensation(cameraId: String, activity: Activity, isFrontFacing: Boolean): Int {
-        // Get the device's current rotation relative to its "native" orientation.
-        // Then, from the ORIENTATIONS table, look up the angle the image must be
-        // rotated to compensate for the device's rotation.
-        val deviceRotation = activity.windowManager.defaultDisplay.rotation
-        var rotationCompensation = ORIENTATIONS.get(deviceRotation)
-
-        // Get the device's sensor orientation.
-        val cameraManager = activity.getSystemService(CAMERA_SERVICE) as CameraManager
-        val sensorOrientation = cameraManager
-            .getCameraCharacteristics(cameraId)
-            .get(CameraCharacteristics.SENSOR_ORIENTATION)!!
-
-        if (isFrontFacing) {
-            rotationCompensation = (sensorOrientation + rotationCompensation) % 360
-        } else { // back-facing
-            rotationCompensation = (sensorOrientation - rotationCompensation + 360) % 360
-        }
-        return rotationCompensation
     }
 
     private fun initCamera(){
@@ -137,7 +112,7 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
         // Tess two: Copy tess data
         val language = "slk"
         val dataName = "$language.traineddata"
-        baseAPI = cd.initTessTwo(this, dataName, language, TAG)
+        baseAPI = initTessTwo(this, dataName, language, TAG)
 
 
     }
@@ -179,10 +154,10 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
         }
 
         // Text Recognition using Coroutines
-        // TODO: Tess Two is extremely slow
+        // TODO: Tess Two is extremely slow not suitable for real-time detection
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.Main) {
-                cd.detectTextTessTwo(frame.clone(), baseAPI) { detectedText ->
+                detectTextTessTwo(frame.clone(), baseAPI) { detectedText ->
                     textView.text = detectedText
                 }
             }
