@@ -15,6 +15,8 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.TextDetection.Companion.detectText
 import com.example.project2.TextDetection.Companion.detectTextSuspend
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -156,35 +158,14 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
 
-        val rectangles = cd.detectRectOtsu(frame)
+        detectRectOtsu(frame)
 
         val rotation = getRotationCompensation(CAMERA_ID, this, false)
 
-        coroutineScope.launch {
-            try {
-                val cardTextBuilder = StringBuilder()
-                for (rect in rectangles) {
-                    val subframe = frame.submat(rect)
-                    val detectedText = withContext(Dispatchers.IO) {
-                        detectTextSuspend(subframe, rotation, recognizer)
-                    }
-                    cardTextBuilder.append(detectedText).append("\n")
-
-                }
-                withContext(Dispatchers.Main) {
-                    // Log.d(TAG, "Card text: ${cardTextBuilder.toString()}")
-                    textView.text = cardTextBuilder.toString()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error during text recognition: ${e.message}")
-                // Handle the error
-            }
-        }
-        // TODO: the following works better than coroutines and rects
-        // Possible solution: use coordinates of found text to assign to found card
-//        cd.detectText(frame, rotation, recognizer) { detectedText ->
-//            textView.text = detectedText
-//        }
+        // TODO: Possible solution: use coordinates of found text to assign to found card
+       detectText(frame, rotation, recognizer) { detectedText ->
+           textView.text = detectedText
+       }
 
         return frame
     }

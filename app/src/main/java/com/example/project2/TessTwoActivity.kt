@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.project2.CardDetection.Companion.detectRectOtsu
 import com.example.project2.TextDetection.Companion.detectTextTessTwo
 import com.example.project2.TextDetection.Companion.initTessTwo
 import com.google.mlkit.vision.text.TextRecognition
@@ -146,7 +147,7 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
 
         // Object Detection using Coroutines
         CoroutineScope(Dispatchers.Default).launch {
-            val rectangles = cd.detectRectOtsu(frame.clone()) // Clone frame to avoid concurrency issues
+            val rectangles = detectRectOtsu(frame.clone()) // Clone frame to avoid concurrency issues
             // Process rectangles (e.g., draw bounding boxes) on the UI thread
             withContext(Dispatchers.Main) {
                 // ... draw rectangles on frame ...
