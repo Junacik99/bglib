@@ -59,7 +59,7 @@ fun HomeScreen(){
 
     var cardDetectMethod by remember { mutableStateOf("Otsu") }
     var ocrMethod by remember { mutableStateOf("Firebase") }
-    var noCards by remember { mutableStateOf(4) }
+    var numberOfCards by remember { mutableStateOf(4) }
 
     // Everything Column
     Column (modifier = Modifier.fillMaxSize(),
@@ -143,9 +143,9 @@ fun HomeScreen(){
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text("How many cards to detect:")
                 OutlinedTextField(
-                    value = noCards.toString(),
+                    value = numberOfCards.toString(),
                     onValueChange = {
-                        noCards = it.toIntOrNull() ?: 0
+                        numberOfCards = it.toIntOrNull() ?: 0
                     },
                     modifier = Modifier
                         .size(width = 100.dp, height = 60.dp),
@@ -167,7 +167,7 @@ fun HomeScreen(){
                 Text(ocrMethod)
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text("Cards to detect:")
-                Text(noCards.toString())
+                Text(numberOfCards.toString())
             }
 
         }
@@ -181,7 +181,7 @@ fun HomeScreen(){
                 val intent = Intent(context, ExampleActivity::class.java)
                 intent.putExtra("cardDetectMethod", cardDetectMethod)
                 intent.putExtra("ocrMethod", ocrMethod)
-                intent.putExtra("noCards", noCards)
+                intent.putExtra("numberOfCards", numberOfCards)
                 context.startActivity(intent)
         }) {
             Text("START")

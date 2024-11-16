@@ -14,20 +14,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project2.ui.theme.Project2Theme
 
 class DetectedCardsActivity : ComponentActivity() {
+    private var numberOfCards = 0
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        numberOfCards = intent.getIntExtra("numberOfCards", 0)
+
         enableEdgeToEdge()
         setContent {
             Project2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    DetectedCards()
+                    DetectedCards(numberOfCards)
                 }
             }
         }
@@ -35,12 +41,15 @@ class DetectedCardsActivity : ComponentActivity() {
 }
 
 @Composable
-fun DetectedCards(){
+fun DetectedCards(numberOfCards: Int){
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
+
         Spacer(modifier = Modifier.padding(40.dp))
-        Text("Cards Result",
-            fontSize = 24.sp)
+        Text("Cards Result", fontSize = 24.sp)
+
+        Spacer(modifier = Modifier.padding(40.dp))
+        Text("Detected cards: $numberOfCards")
 
     }
 }
@@ -49,6 +58,6 @@ fun DetectedCards(){
 @Composable
 fun DetectedCardsPreview() {
     Project2Theme {
-        DetectedCards()
+        DetectedCards(4)
     }
 }
