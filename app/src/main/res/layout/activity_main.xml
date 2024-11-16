@@ -27,4 +27,11 @@
      android:textColor="#FFFFFF"
      android:background="#66000000"/>
 
+ <Button
+     android:id="@+id/button"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_gravity="bottom|center"
+     android:text="Button" />
+
 </FrameLayout>

@@ -29,15 +29,18 @@ class CardDetection {
             frame : Mat,
             contours : MutableList<MatOfPoint>,
             retBoundingBoxes : Boolean=false,
-            contourColor : Scalar=Scalar(0.0, 255.0, 0.0),
-            boundingBoxColor : Scalar=Scalar(255.0, 0.0, 0.0),
+            contourColor : Scalar=Scalar(0.0, 255.0, 0.0), // Green - contours
+            boundingBoxColor : Scalar=Scalar(255.0, 0.0, 0.0), // Red - bounding box
         ) : MutableList<Rect>
         {
             val boundingBoxes = mutableListOf<Rect>()
 
+            val frameArea = frame.size().height * frame.size().width
+
             for (contour in contours) {
-                // Filter out small contours that are not likely to be cards
-                if (Imgproc.contourArea(contour) < 1000) continue
+                // Filter out small and big contours that are not likely to be cards
+                if (Imgproc.contourArea(contour) < frameArea * 0.02) continue
+                if (Imgproc.contourArea(contour) > frameArea * 0.9) continue
 
                 // Approximate contour to a polygon
                 val approx = MatOfPoint2f()
@@ -51,6 +54,7 @@ class CardDetection {
                     if (retBoundingBoxes) {
                         // Calculate and draw bounding rectangle
                         val rect = Imgproc.boundingRect(MatOfPoint(*approx.toArray()))
+
                         Imgproc.rectangle(frame, rect, boundingBoxColor, 2)
                         boundingBoxes.add(rect)
                     }

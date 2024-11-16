@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">project2</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_detected_cards">DetectedCardsActivity</string>
 </resources>
