@@ -1,11 +1,18 @@
 package com.example.project2
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.util.Log
+import android.util.SparseIntArray
+import android.view.Surface
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognizer
 import com.googlecode.tesseract.android.TessBaseAPI
+import org.opencv.android.CameraActivity.CAMERA_SERVICE
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.imgproc.Imgproc
@@ -30,6 +37,32 @@ class TextDetection {
         }
 
         /* Firebase */
+
+        // Get the angle by which an image must be rotated given the device's current orientation
+        @Throws(CameraAccessException::class)
+        fun getRotationCompensation(cameraId: String, activity: Activity, isFrontFacing: Boolean): Int {
+            // Get the device's current rotation relative to its "native" orientation.
+            val orientations = SparseIntArray()
+            orientations.append(Surface.ROTATION_0, 0)
+            orientations.append(Surface.ROTATION_90, 90)
+            orientations.append(Surface.ROTATION_180, 180)
+            orientations.append(Surface.ROTATION_270, 270)
+            val deviceRotation = activity.windowManager.defaultDisplay.rotation
+            var rotationCompensation = orientations.get(deviceRotation)
+
+            // Get the device's sensor orientation.
+            val cameraManager = activity.getSystemService(CAMERA_SERVICE) as CameraManager
+            val sensorOrientation = cameraManager
+                .getCameraCharacteristics(cameraId)
+                .get(CameraCharacteristics.SENSOR_ORIENTATION)!!
+
+            if (isFrontFacing) {
+                rotationCompensation = (sensorOrientation + rotationCompensation) % 360
+            } else { // back-facing
+                rotationCompensation = (sensorOrientation - rotationCompensation + 360) % 360
+            }
+            return rotationCompensation
+        }
 
         fun detectText(frame: Mat, rotation: Int, textRecognizer: TextRecognizer, onResult: (String) -> Unit) {
             // create bitmap

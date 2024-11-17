@@ -119,6 +119,8 @@ class CardDetection {
 
             return rectangles
         }
+
+
     }
 
 
