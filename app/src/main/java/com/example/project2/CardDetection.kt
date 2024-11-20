@@ -28,7 +28,8 @@ class CardDetection {
         private fun drawRectangle(
             frame : Mat,
             contours : MutableList<MatOfPoint>,
-            retBoundingBoxes : Boolean=false,
+            drawBoundingBoxes : Boolean=false,
+            drawContours : Boolean=true,
             contourColor : Scalar=Scalar(0.0, 255.0, 0.0), // Green - contours
             boundingBoxColor : Scalar=Scalar(255.0, 0.0, 0.0), // Red - bounding box
         ) : MutableList<Rect>
@@ -49,15 +50,13 @@ class CardDetection {
                 // Check if polygon has 4 vertices (rectangle-like), which is likely a card
                 if (approx.toArray().size == 4) {
                     // Draw the contour on the original frame
-                    Imgproc.drawContours(frame, listOf(MatOfPoint(*approx.toArray())), -1, contourColor, 2)
+                    if (drawContours) Imgproc.drawContours(frame, listOf(MatOfPoint(*approx.toArray())), -1, contourColor, 2)
 
-                    if (retBoundingBoxes) {
-                        // Calculate and draw bounding rectangle
-                        val rect = Imgproc.boundingRect(MatOfPoint(*approx.toArray()))
+                    // Calculate and draw bounding rectangle
+                    val rect = Imgproc.boundingRect(MatOfPoint(*approx.toArray()))
+                    if (drawBoundingBoxes) Imgproc.rectangle(frame, rect, boundingBoxColor, 2)
+                    boundingBoxes.add(rect)
 
-                        Imgproc.rectangle(frame, rect, boundingBoxColor, 2)
-                        boundingBoxes.add(rect)
-                    }
                 }
             }
             return boundingBoxes
@@ -99,7 +98,11 @@ class CardDetection {
         }
 
         // Detect rectangle using Otsu method
-        fun detectRectOtsu(frame: Mat): MutableList<Rect> {
+        fun detectRectOtsu(
+            frame: Mat,
+            drawBoundingBoxes: Boolean = false,
+            drawContours: Boolean = false
+        ): MutableList<Rect> {
             // Convert to grayscale and apply Gauss blur
             val gray = preprocess(frame)
 
@@ -111,7 +114,7 @@ class CardDetection {
             val contours = mutableListOf<MatOfPoint>()
             Imgproc.findContours(binary, contours, Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
 
-            val rectangles = drawRectangle(frame, contours, true)
+            val rectangles = drawRectangle(frame, contours, drawBoundingBoxes, drawContours)
 
             // Release resources
             gray.release()
