@@ -1,15 +1,10 @@
 package com.example.project2
 
 import android.Manifest
-import android.content.ContentValues
-import android.content.Context
+
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.view.SurfaceView
 import android.view.WindowManager
@@ -19,13 +14,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.Utils.Companion.checkCamPermission
+import com.example.project2.Utils.Companion.resizeFrames
+import com.example.project2.Utils.Companion.saveFrames
 import org.opencv.android.CameraActivity
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import org.opencv.android.OpenCVLoader
-import org.opencv.android.Utils
 import org.opencv.core.Mat
-import java.io.File
 
 
 class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
@@ -34,66 +30,9 @@ class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
     private lateinit var button: Button
     protected val TAG = "OCVSample::Activity"
     private var subframes = mutableListOf<Mat>()
-
-    private fun checkCamPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Permission was not granted yet")
-            return false
-        }
-        return true
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun saveImageToMediaStore(context: Context, bitmap: Bitmap, displayName: String, mimeType: String): Uri? {
-        val values = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
-            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
-            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "CardDetector")
-            put(MediaStore.Images.Media.IS_PENDING, 1)
-        }
-
-        val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val imageUri = context.contentResolver.insert(collection, values)
-
-        imageUri?.let {
-            context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
-            }
-
-            values.clear()
-            values.put(MediaStore.Images.Media.IS_PENDING, 0)
-            context.contentResolver.update(it, values, null, null)
-        }
-
-        return imageUri
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun saveFrames(frames: MutableList<Mat>){
-        if (frames.isNotEmpty()){
-            for (frame in frames){
-                // Convert to bitmap
-                val bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888)
-                Utils.matToBitmap(frame, bitmap)
-
-                val displayName = "card_${System.currentTimeMillis()}.png"
-                val mimeType = "image/png"
-
-                val imageUri = saveImageToMediaStore(this, bitmap, displayName, mimeType)
-
-                if (imageUri != null) {
-                    // Image saved successfully
-                    Log.d(TAG, "Image saved successfully")
-                } else {
-                    // Error saving image
-                    Log.e(TAG, "Error saving image")
-
-                }
-            }
+    private val frameSize = 128 // Change this according to the input layer size of your model
 
 
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,7 +42,8 @@ class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
 
         button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            saveFrames(subframes)
+            subframes = resizeFrames(subframes, frameSize, frameSize)
+            saveFrames(subframes, this)
         }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -120,7 +60,7 @@ class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
             return
         }
 
-        if (checkCamPermission()) {
+        if (checkCamPermission(this)) {
             Log.d(TAG, "Permissions granted")
             mOpenCvCameraView.setCameraPermissionGranted()
 
