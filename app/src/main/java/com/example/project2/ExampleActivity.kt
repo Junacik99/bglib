@@ -32,6 +32,8 @@ class ExampleActivity : CustomClassActivity() {
     private val ocrMethod: String by lazy { intent.extras?.getString("ocrMethod", "") ?: "" }
     private val numberOfCards: Int by lazy { intent.extras?.getInt("numberOfCards", 0) ?: 0 }
 
+    private lateinit var modelInterpreter : CardDetection.Companion.ModelInterpreter
+
     lateinit var button: Button
 
     private var latestRects: List<Rect>? = null
@@ -54,6 +56,12 @@ class ExampleActivity : CustomClassActivity() {
             logRectsInfo(latestRects ?: emptyList(), latestFrame ?: Mat())
         }
 
+        try {
+            modelInterpreter = CardDetection.Companion.ModelInterpreter(this, "binary_classifier_model.tflite")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing model interpreter", e)
+        }
+
     }
 
 
@@ -68,11 +76,29 @@ class ExampleActivity : CustomClassActivity() {
         }
 
         if (rects.size == numberOfCards && !activityStarted) {
+            // Check if rects are cards
+            try {
+                rects.forEachIndexed{
+                        index, rect ->
+                    val subframe = Mat(frame, rect)
+                    val inputData = modelInterpreter.preprocessMat(subframe)
+                    val output = modelInterpreter.predict(inputData)
+                    val isCard = output[0] <= 0.5 // Class 0 is card, class 1 is not a card
+                    Log.d(TAG, "For rect $index is card: $isCard")
+
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during rectangle classification", e)
+            }
+
+
+
+
             Log.d(TAG, "All cards detected $numberOfCards")
             activityStarted = true
             // TODO: Check the alignment of the cards?
 
-            // Once all the cards are detected, start the OCR and align them
+            // Once all the cards are detected, get rotation and start the OCR
             val rotation = getRotationCompensation(CAMERA_ID, this, false)
             CoroutineScope(Dispatchers.Default).launch {
                 val deferredTexts = mutableListOf<Deferred<String>>()

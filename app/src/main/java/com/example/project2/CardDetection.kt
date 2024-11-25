@@ -1,12 +1,8 @@
 package com.example.project2
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.util.Log
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognizer
 import com.googlecode.tesseract.android.TessBaseAPI
-import org.opencv.android.Utils
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.MatOfPoint2f
@@ -14,15 +10,68 @@ import org.opencv.core.Rect
 import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
-import kotlin.coroutines.suspendCoroutine
+import org.tensorflow.lite.Interpreter
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class CardDetection {
     companion object {
         private var baseAPI : TessBaseAPI? = null
+
+
+        class ModelInterpreter(context: Context, modelName: String, inputSize: Int = 128) {
+            private var interpreter: Interpreter
+            private var mInputSize: Int = 0
+
+            init {
+                val assetManager = context.assets
+                val inputStream = assetManager.open(modelName)
+                val buffer = inputStream.readBytes().let { ByteBuffer.allocateDirect(it.size).apply {
+                    order(ByteOrder.nativeOrder())
+                    put(it)
+                } }
+                interpreter = Interpreter(buffer)
+                mInputSize = inputSize
+            }
+
+            fun predict(inputData: FloatArray): FloatArray {
+                // Prepare the input buffer
+                val inputBuffer = ByteBuffer.allocateDirect(inputData.size * 4) // 4 bytes per float
+                inputBuffer.order(ByteOrder.nativeOrder())
+                for (value in inputData) {
+                    inputBuffer.putFloat(value)
+                }
+
+                // Output buffer
+                val output = Array(1) { FloatArray(1) }
+
+                // Run inference
+                interpreter.run(inputBuffer, output)
+
+                return output[0]
+            }
+
+            fun preprocessMat(mat: Mat): FloatArray {
+                // Resize the Mat to the model's expected input size
+                val resizedMat = Mat()
+                Imgproc.resize(mat, resizedMat, Size(mInputSize.toDouble(), mInputSize.toDouble()))
+
+                // Convert to RGB if needed
+                val rgbMat = Mat()
+                Imgproc.cvtColor(resizedMat, rgbMat, Imgproc.COLOR_BGR2RGB)
+
+                // Flatten and normalize the Mat
+                val floatArray = FloatArray(mInputSize * mInputSize * 3)
+                val buffer = ByteBuffer.allocateDirect(mInputSize * mInputSize * 3 * 4) // 4 bytes per float
+                buffer.order(ByteOrder.nativeOrder())
+                rgbMat.convertTo(rgbMat, CvType.CV_32FC3, 1.0 / 255.0) // Normalize
+
+                // Copy Mat data into the FloatArray
+                rgbMat.get(0, 0, floatArray)
+                return floatArray
+            }
+        }
+
 
         // Draw rectangle around contours inside the input image
         private fun drawRectangle(
