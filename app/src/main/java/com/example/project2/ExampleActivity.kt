@@ -86,6 +86,7 @@ class ExampleActivity : CustomClassActivity() {
                     val isCard = output[0] <= 0.5 // Class 0 is card, class 1 is not a card
                     Log.d(TAG, "For rect $index is card: $isCard")
 
+                    if (!isCard) return frame
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error during rectangle classification", e)
