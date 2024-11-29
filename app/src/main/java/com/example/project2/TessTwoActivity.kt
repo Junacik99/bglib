@@ -81,7 +81,7 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
         Log.i(TAG, "called onCreate")
 
         // init view
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_detect_text)
 
         // Text view bind
         textView = findViewById(R.id.cardText)

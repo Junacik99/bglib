@@ -22,6 +22,7 @@ import java.io.File
 class Utils {
     companion object {
 
+        // Check if camera permission is granted
         fun checkCamPermission(context: Context): Boolean {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 // Log.d(TAG, "Permission was not granted yet")
@@ -56,12 +57,17 @@ class Utils {
             return imageUri
         }
 
+        fun mat2bitmap(frame: Mat): Bitmap {
+            val bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888)
+            Utils.matToBitmap(frame, bitmap)
+            return bitmap
+        }
+
         // Save frame
         @RequiresApi(Build.VERSION_CODES.Q)
         fun saveFrame(frame: Mat, context: Context){
             // Convert to bitmap
-            val bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888)
-            Utils.matToBitmap(frame, bitmap)
+            val bitmap = mat2bitmap(frame)
 
             val displayName = "card_${System.currentTimeMillis()}.png"
             val mimeType = "image/png"

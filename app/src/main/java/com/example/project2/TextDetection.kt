@@ -9,6 +9,7 @@ import android.hardware.camera2.CameraManager
 import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
+import com.example.project2.Utils.Companion.mat2bitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognizer
 import com.googlecode.tesseract.android.TessBaseAPI
@@ -26,16 +27,6 @@ class TextDetection {
 
     /* OCR */
     companion object{
-        // Convert Mat to Bitmap
-        fun mat2bitmap(mat: Mat): Bitmap {
-            // create bitmap
-            var gray = Mat()
-            Imgproc.cvtColor(mat, gray, Imgproc.COLOR_RGBA2GRAY, 4)
-            val bmp = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888)
-            Utils.matToBitmap(gray, bmp)
-            return bmp
-        }
-
         /* Firebase */
 
         // Get the angle by which an image must be rotated given the device's current orientation
@@ -65,8 +56,11 @@ class TextDetection {
         }
 
         fun detectText(frame: Mat, rotation: Int, textRecognizer: TextRecognizer, onResult: (String) -> Unit) {
+            var gray = Mat()
+            Imgproc.cvtColor(frame, gray, Imgproc.COLOR_RGBA2GRAY, 4)
+
             // create bitmap
-            val bmp = mat2bitmap(frame)
+            val bmp = mat2bitmap(gray)
 
             // Convert to image
             val image = InputImage.fromBitmap(bmp, rotation)

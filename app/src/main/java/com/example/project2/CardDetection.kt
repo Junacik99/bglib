@@ -18,7 +18,8 @@ class CardDetection {
     companion object {
         private var baseAPI : TessBaseAPI? = null
 
-
+        /*****************************************************************************************/
+        /* Model Interpreter */
         class ModelInterpreter(context: Context, modelName: String, inputSize: Int = 128) {
             private var interpreter: Interpreter
             private var mInputSize: Int = 0
@@ -73,6 +74,9 @@ class CardDetection {
         }
 
 
+        /*****************************************************************************************/
+        /* Utility functions */
+
         // Draw rectangle around contours inside the input image
         private fun drawRectangle(
             frame : Mat,
@@ -111,11 +115,12 @@ class CardDetection {
             return boundingBoxes
         }
 
+
         /*****************************************************************************************/
         /* Rectangle detection */
 
         // Preprocess the input image for edge detection
-        private fun preprocess(inputImg: Mat) : Mat {
+        private fun grayGauss(inputImg: Mat) : Mat {
             // Convert the input frame to grayscale
             val gray = Mat()
             Imgproc.cvtColor(inputImg, gray, Imgproc.COLOR_RGBA2GRAY)
@@ -128,7 +133,7 @@ class CardDetection {
 
         // Detect rectangle using Canny edge detection
         fun detectRectCanny(frame: Mat): MutableList<Rect> {
-            val gray = preprocess(frame)
+            val gray = grayGauss(frame)
 
             // Canny edge detection
             val edges = Mat()
@@ -153,7 +158,7 @@ class CardDetection {
             drawContours: Boolean = false
         ): MutableList<Rect> {
             // Convert to grayscale and apply Gauss blur
-            val gray = preprocess(frame)
+            val gray = grayGauss(frame)
 
             // Apply Otsu's thresholding to segment the cards
             val binary = Mat()

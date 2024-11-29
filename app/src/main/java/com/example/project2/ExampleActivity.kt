@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import androidx.compose.foundation.layout.add
 import com.example.project2.CardDetection.Companion.detectRectCanny
 import com.example.project2.CardDetection.Companion.detectRectOtsu
 import com.example.project2.TextDetection.Companion.detectText
@@ -24,7 +23,7 @@ import org.opencv.core.Mat
 import org.opencv.core.Rect
 import kotlin.collections.toTypedArray
 
-class ExampleActivity : CustomClassActivity() {
+class ExampleActivity : CardBaseActivity() {
     val context = this
 
     // Get parameters from HomeActivity

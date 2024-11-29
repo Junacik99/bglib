@@ -74,6 +74,24 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".KeyDetectorActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Project2">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DetectedKeyActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Project2">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

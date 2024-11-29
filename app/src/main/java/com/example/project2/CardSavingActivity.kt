@@ -1,6 +1,7 @@
 package com.example.project2
 
 import android.Manifest
+import android.annotation.SuppressLint
 
 import android.content.pm.PackageManager
 import android.os.Build
@@ -26,13 +27,18 @@ import org.opencv.core.Mat
 
 class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
 
-    private lateinit var mOpenCvCameraView: CameraBridgeViewBase
-    private lateinit var button: Button
+    protected lateinit var mOpenCvCameraView: CameraBridgeViewBase
+    protected lateinit var button: Button
     protected val TAG = "OCVSample::Activity"
+
     private var subframes = mutableListOf<Mat>()
     private val frameSize = 128 // Change this according to the input layer size of your model
 
-
+    @SuppressLint("NewApi")
+    protected fun buttonPressed() {
+        subframes = resizeFrames(subframes, frameSize, frameSize)
+        saveFrames(subframes, this)
+    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +48,7 @@ class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
 
         button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            subframes = resizeFrames(subframes, frameSize, frameSize)
-            saveFrames(subframes, this)
+            buttonPressed()
         }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
