@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Button
 import com.example.project2.CardDetection.Companion.detectRectCanny
 import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.ImageProcessing.Companion.cards2grid
 import com.example.project2.TextDetection.Companion.detectText
 import com.example.project2.TextDetection.Companion.getRotationCompensation
 import com.google.mlkit.vision.text.TextRecognition
@@ -28,8 +29,11 @@ class ExampleActivity : CardBaseActivity() {
 
     // Get parameters from HomeActivity
     private val cardDetectMethod: String by lazy { intent.extras?.getString("cardDetectMethod", "") ?: "" }
-    private val ocrMethod: String by lazy { intent.extras?.getString("ocrMethod", "") ?: "" }
-    private val numberOfCards: Int by lazy { intent.extras?.getInt("numberOfCards", 0) ?: 0 }
+    // private val ocrMethod: String by lazy { intent.extras?.getString("ocrMethod", "") ?: "" }
+    private val rows: Int by lazy { intent.extras?.getInt("rows", 1) ?: 1 }
+    private val cols: Int by lazy { intent.extras?.getInt("cols", 1) ?: 1 }
+    private var numberOfCards: Int = 0
+
 
     private lateinit var modelInterpreter : CardDetection.Companion.ModelInterpreter
 
@@ -49,6 +53,8 @@ class ExampleActivity : CardBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        numberOfCards = rows * cols
 
         button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
@@ -96,15 +102,18 @@ class ExampleActivity : CardBaseActivity() {
 
             Log.d(TAG, "All cards detected $numberOfCards")
             activityStarted = true
-            // TODO: Check the alignment of the cards?
+
+            // Align cards into the grid
+            val grid = ArrayList(cards2grid(rects, rows, cols))
+            Log.d(TAG, "Grid: $grid")
 
             // Once all the cards are detected, get rotation and start the OCR
             val rotation = getRotationCompensation(CAMERA_ID, this, false)
             CoroutineScope(Dispatchers.Default).launch {
                 val deferredTexts = mutableListOf<Deferred<String>>()
 
-                rects.forEachIndexed { index, rect ->
-                    val subframe = Mat(frame, rect)
+                grid.forEachIndexed { index, card ->
+                    val subframe = Mat(frame, card.boundingBox)
                     val deferredText = async {
                         val textDeferred = CompletableDeferred<String>()
                         detectText(subframe, rotation, TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)) { detectedText ->
@@ -113,17 +122,30 @@ class ExampleActivity : CardBaseActivity() {
                         }
                         textDeferred.await() // Wait for the CompletableDeferred to be completed
                     }
-                    deferredTexts.add(deferredText)
+                    // deferredTexts.add(deferredText)
+                    card.text = deferredText.await()
                 }
 
-                val texts = deferredTexts.awaitAll()
+                // val texts = deferredTexts.awaitAll()
 
-                Log.d(TAG, "Texts: $texts")
+                val gridTexts = grid.map { it.text }
+                Log.d(TAG, "Texts: $gridTexts")
+
+                for (card in grid){
+                    Log.d(TAG, "Card: ${card.text} pos: ${card.gridPos}")
+                }
 
                 withContext(Dispatchers.Main) {
                     val intent = Intent(context, DetectedCardsActivity::class.java)
                     intent.putExtra("numberOfCards", numberOfCards)
-                    intent.putExtra("texts", texts.toTypedArray())
+                    intent.putExtra("cols", cols)
+                    intent.putExtra("rows", rows)
+                    try{
+                        intent.putParcelableArrayListExtra("cards", grid)
+                    }
+                    catch (e: Exception){
+                        Log.e(TAG, "Error putting cards in intent", e)
+                    }
                     context.startActivity(intent)
                 }
             }

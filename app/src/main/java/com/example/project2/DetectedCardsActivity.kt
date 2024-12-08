@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project2.ui.theme.Project2Theme
+import org.opencv.core.Rect
 
 class DetectedCardsActivity : ComponentActivity() {
     private var numberOfCards = 0
@@ -28,17 +30,18 @@ class DetectedCardsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         numberOfCards = intent.getIntExtra("numberOfCards", 0)
-        val texts = intent.getStringArrayExtra("texts") ?: emptyArray()
+        val cards = intent.getParcelableArrayListExtra<Card>("cards") ?: emptyList()
+        val rows = intent.getIntExtra("rows", 1)
+        val cols = intent.getIntExtra("cols", 1)
 
-        Log.d("OCVSample::Activity", "Text onCreate: ${texts.toString()}")
-
+        Log.d("OCVSample::Activity", "${cards.size} cards: $cards")
 
 
         enableEdgeToEdge()
         setContent {
             Project2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    DetectedCards(numberOfCards, texts)
+                    DetectedCards(rows, cols, cards)
                 }
             }
         }
@@ -46,7 +49,7 @@ class DetectedCardsActivity : ComponentActivity() {
 }
 
 @Composable
-fun DetectedCards(numberOfCards: Int, texts: Array<String>){
+fun DetectedCards(numberOfRows: Int, numberOfCols: Int, cards: List<Card>){
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -54,12 +57,16 @@ fun DetectedCards(numberOfCards: Int, texts: Array<String>){
         Text("Cards Result", fontSize = 24.sp)
 
         Spacer(modifier = Modifier.padding(40.dp))
-        Text("Detected cards: $numberOfCards")
+        Text("Detected cards: $numberOfRows x $numberOfCols")
 
         Spacer(modifier = Modifier.padding(40.dp))
-        for (text in texts) {
-            // Log.d("OCVSample::Activity", "Text: $text")
-            Text(text)
+        for (i in 0 until numberOfRows) {
+            Row() {
+                for (j in 0 until numberOfCols) {
+                    val card = cards.firstOrNull() { it.gridPos == gridPos(i, j) }
+                    Text(card!!.text, modifier = Modifier.padding(10.dp))
+                }
+            }
             Spacer(modifier = Modifier.padding(10.dp))
         }
 
@@ -69,7 +76,14 @@ fun DetectedCards(numberOfCards: Int, texts: Array<String>){
 @Preview(showBackground = true)
 @Composable
 fun DetectedCardsPreview() {
+    val cards = listOf(
+        Card(Rect(0, 0, 100, 100), "Card 1"),
+        Card(Rect(100, 0, 100, 100), "Card 2"),
+        Card(Rect(20, 0, 35, 100), "Card 3"),
+        Card(Rect(15, 0, 42, 100), "Card 4"),
+    )
+
     Project2Theme {
-        DetectedCards(4, listOf("Card 1", "Card 2", "Card 3", "Card 4").toTypedArray())
+        DetectedCards(2, 2, cards)
     }
 }

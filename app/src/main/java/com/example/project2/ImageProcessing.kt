@@ -1,5 +1,9 @@
 package com.example.project2
 
+import android.graphics.Color
+import org.opencv.core.Mat
+import org.opencv.core.Rect
+
 class ImageProcessing {
     companion object{
 
@@ -20,8 +24,6 @@ class ImageProcessing {
         captureScreen(region: Rectangle? = null): Bitmap: Captures a screenshot of the game window or a specific region.
 
         findImage(template: Bitmap, threshold: Double = 0.9): Point?: Locates an image template within the game screen and returns its coordinates.
-
-        getPixelColor(x: Int, y: Int): Color: Retrieves the color of a pixel at the specified coordinates.
 
         sendKeystrokes(text: String): Simulates keyboard input to the game.
 
@@ -63,5 +65,39 @@ class ImageProcessing {
         delay(milliseconds: Long): Pauses execution for a specified duration.
 
          */
+
+        data class Pixel(val red: UByte, val green: UByte, val blue: UByte)
+        data class Vector2i(val x: Int, val y: Int)
+
+        // Retrieves the color of a pixel at the specified coordinates.
+        // ColorInt - RGB can be easily represented as Int (for example blue = 0x0000ff)
+        fun getPixelColor(frame: Mat, x: Int, y: Int): Int {
+            val pixel = frame.get(y, x)
+            val blue = pixel[0].toInt()
+            val green = pixel[1].toInt()
+            val red = pixel[2].toInt()
+            return Color.rgb(red, green, blue)
+        }
+
+        // Sorts unordered list of cards into uniform grid structure
+        fun cards2grid(cards: List<Rect>, numRows: Int, numCols: Int): List<Card> {
+            val sortedCards = cards.sortedBy { it.y }
+            val grid = mutableListOf<Card>()
+
+            for (row in 0 until numRows) {
+                val cardsInRow = sortedCards.subList(row * numCols, minOf((row + 1) * numCols, sortedCards.size))
+                    .sortedBy { it.x } // Sort by x within each row
+
+                for (col in 0 until cardsInRow.size) {
+                    val gridPos = Vector2i(row, col)
+                    val newCard = Card(cardsInRow[col], "")
+                    newCard.gridPos.col = col
+                    newCard.gridPos.row = row
+                    grid.add(newCard)
+                }
+            }
+
+            return grid
+        }
     }
 }
