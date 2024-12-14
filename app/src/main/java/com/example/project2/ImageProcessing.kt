@@ -5,7 +5,6 @@ import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Rect
 import org.opencv.core.Size
-import org.opencv.core.put
 import org.opencv.imgproc.Imgproc
 
 class ImageProcessing {

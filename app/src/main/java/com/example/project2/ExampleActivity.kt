@@ -1,6 +1,7 @@
 package com.example.project2
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -34,6 +35,7 @@ class ExampleActivity : CardBaseActivity() {
     private val cols: Int by lazy { intent.extras?.getInt("cols", 1) ?: 1 }
     private var numberOfCards: Int = 0
 
+    private var mediaPlayer: MediaPlayer? = null
 
     private lateinit var modelInterpreter : CardDetection.Companion.ModelInterpreter
 
@@ -66,6 +68,10 @@ class ExampleActivity : CardBaseActivity() {
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing model interpreter", e)
         }
+
+        // Init media player for sound effects
+        mediaPlayer = MediaPlayer.create(this, R.raw.r2d2_beep)
+        mediaPlayer?.setOnPreparedListener { /* TODO */ }
 
     }
 
@@ -102,6 +108,9 @@ class ExampleActivity : CardBaseActivity() {
 
             Log.d(TAG, "All cards detected $numberOfCards")
             activityStarted = true
+
+            // Play sound
+            mediaPlayer?.start()
 
             // Align cards into the grid
             val grid = ArrayList(cards2grid(rects, rows, cols))
