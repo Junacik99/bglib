@@ -1,8 +1,12 @@
 package com.example.project2
 
 import android.graphics.Color
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Rect
+import org.opencv.core.Size
+import org.opencv.core.put
+import org.opencv.imgproc.Imgproc
 
 class ImageProcessing {
     companion object{
@@ -68,6 +72,28 @@ class ImageProcessing {
 
         data class Pixel(val red: UByte, val green: UByte, val blue: UByte)
         data class Vector2i(val x: Int, val y: Int)
+
+        fun medianFilter(img: Mat, kernelSize: Int = 7): Mat {
+            val median = Mat()
+            Imgproc.medianBlur(img, median, kernelSize)
+            return median
+        }
+
+        fun gaussFilter(img: Mat, kernelSize: Int = 7): Mat {
+            val gauss = Mat()
+            Imgproc.GaussianBlur(img, gauss, Size(kernelSize.toDouble(), kernelSize.toDouble()), 0.0)
+            return gauss
+        }
+
+        fun sharpenConv2d(img: Mat, kernelData: FloatArray = floatArrayOf(0.0f, -1.0f, 0.0f, -1.0f, 5.0f, -1.0f, 0.0f, -1.0f, 0.0f)): Mat {
+            val kernel = Mat(3, 3, CvType.CV_32F)
+            kernel.put(0,0, kernelData)
+
+            val sharpened = Mat()
+            Imgproc.filter2D(img, sharpened, -1, kernel)
+            return sharpened
+        }
+
 
         // Retrieves the color of a pixel at the specified coordinates.
         // ColorInt - RGB can be easily represented as Int (for example blue = 0x0000ff)
