@@ -9,11 +9,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import org.opencv.android.Utils
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
@@ -61,6 +61,12 @@ class Utils {
             val bitmap = Bitmap.createBitmap(frame.cols(), frame.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(frame, bitmap)
             return bitmap
+        }
+
+        fun bitmap2mat(bitmap: Bitmap): Mat {
+            val mat = Mat(bitmap.height, bitmap.width, CvType.CV_8UC4) // 4 channels for RGBA
+            Utils.bitmapToMat(bitmap, mat)
+            return mat
         }
 
         // Save frame

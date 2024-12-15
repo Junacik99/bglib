@@ -1,6 +1,7 @@
 package com.example.project2
 
 import android.graphics.Color
+import android.util.Log
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -9,6 +10,7 @@ import org.opencv.core.Mat
 import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
+import kotlin.math.abs
 
 class ImageProcessing {
     companion object{
@@ -101,12 +103,13 @@ class ImageProcessing {
         // ColorInt - RGB can be easily represented as Int (for example blue = 0x0000ff)
         fun getPixelColor(frame: Mat, x: Int, y: Int): Int {
             val pixel = frame.get(y, x)
-            val blue = pixel[0].toInt()
+            val blue = pixel[2].toInt()
             val green = pixel[1].toInt()
-            val red = pixel[2].toInt()
+            val red = pixel[0].toInt()
             return Color.rgb(red, green, blue)
         }
 
+        // Get average color of the frame/subframe (roi)
         fun getAvgColor(frame: Mat): Int{
             val pixelCount = frame.height() * frame.width()
             if (pixelCount == 0)
@@ -131,6 +134,48 @@ class ImageProcessing {
 
             return Color.rgb(avgRed, avgGreen, avgBlue)
         }
+
+        fun divideFrameIntoGrid(frame: Mat, numRows: Int, numCols: Int): List<Mat> {
+            val subframeWidth = frame.width() / numCols
+            val subframeHeight = frame.height() / numRows
+            val subframes = mutableListOf<Mat>()
+
+            for (row in 0 until numRows) {
+                for (col in 0 until numCols) {
+                    val x = col * subframeWidth
+                    val y = row * subframeHeight
+                    val region = Rect(x, y, subframeWidth, subframeHeight)
+                    val subframe = frame.submat(region)
+                    subframes.add(subframe)
+                }
+            }
+
+            return subframes
+        }
+
+        fun getColorDistance(color1: Int, color2: Int): Int {
+            val redDiff = abs(color1.red - color2.red)
+            val greenDiff = abs(color1.green - color2.green)
+            val blueDiff = abs(color1.blue - color2.blue)
+            return redDiff + greenDiff + blueDiff
+        }
+
+        fun getClosestColor(color: Int, targetColors: List<Int>): Int {
+
+            var minDistance = Int.MAX_VALUE
+            var closestColor = 0
+
+            for (colorValue in targetColors) {
+                val distance = getColorDistance(color, colorValue)
+                if (distance < minDistance) {
+                    minDistance = distance
+                    closestColor = colorValue
+                }
+            }
+
+            return closestColor
+        }
+
 
         // Sorts unordered list of cards into uniform grid structure
         fun cards2grid(cards: List<Rect>, numRows: Int, numCols: Int): List<Card> {

@@ -20,6 +20,14 @@
      android:layout_height="67dp"
      android:layout_gravity="bottom|center"
      android:text="Process" />
+
+ <TextView
+     android:id="@+id/keyIndicator"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_gravity="center_horizontal"
+     android:text="Key not detected"
+     android:translationY="20.dp" />
  <!-- [camera_view] -->
 
 </FrameLayout>

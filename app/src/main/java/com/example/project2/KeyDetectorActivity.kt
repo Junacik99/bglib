@@ -3,12 +3,15 @@ package com.example.project2
 import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.ImageProcessing.Companion.divideFrameIntoGrid
 import com.example.project2.Utils.Companion.checkCamPermission
 import com.example.project2.Utils.Companion.mat2bitmap
 import org.opencv.android.CameraBridgeViewBase
@@ -20,6 +23,7 @@ class KeyDetectorActivity: CardBaseActivity() {
 
     private var button: Button? = null
     private var lastKey: Mat? = null
+    private var keyIndicator: TextView? = null
 
     fun getCardKey(frame:Mat) : Mat? {
         val rects = detectRectOtsu(frame, drawBoundingBoxes = true)
@@ -40,6 +44,11 @@ class KeyDetectorActivity: CardBaseActivity() {
 
         setContentView(R.layout.activity_key_detector)
 
+        keyIndicator = findViewById<TextView>(R.id.keyIndicator)
+        keyIndicator?.text = "Key not detected"
+        val color = Color.rgb(255, 0, 0)
+        keyIndicator?.setTextColor(color)
+
         button = findViewById<Button>(R.id.process_button)
         button?.setOnClickListener {
             // Pass the frame to the next activity
@@ -54,6 +63,8 @@ class KeyDetectorActivity: CardBaseActivity() {
                 val intent = Intent(this, DetectedKeyActivity::class.java)
                 intent.putExtra("frame", byteArray)
                 startActivity(intent)
+
+
             }
             catch (e: Exception){
                 Log.e(TAG, "Error passing frame to next activity", e)
@@ -85,12 +96,21 @@ class KeyDetectorActivity: CardBaseActivity() {
 
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
-        val key = getCardKey(frame)
-        if (key != null){
-            lastKey = key
+        val key = getCardKey(frame) ?: return frame
+
+        lastKey = key
+
+        runOnUiThread {
+            keyIndicator?.text = "Key detected"
+            val color = Color.rgb(0, 255, 0)
+            keyIndicator?.setTextColor(color)
         }
 
+
+        // TODO: Rotate the key so it's upright for grid splitting
+
         // TODO: Process a frame and return it probably in a coroutine
+
         // TODO: Pass the frame to the next activity
         // TODO: Display an image in the activity
         // TODO: Study and write functions for image processing, such as filtering and enhancements, etc.

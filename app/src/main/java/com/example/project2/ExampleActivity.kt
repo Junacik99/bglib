@@ -104,12 +104,10 @@ class ExampleActivity : CardBaseActivity() {
             }
 
 
-
-
             Log.d(TAG, "All cards detected $numberOfCards")
             activityStarted = true
 
-            // Play sound
+            // Play sound indicating that all cards are detected
             mediaPlayer?.start()
 
             // Align cards into the grid
@@ -119,8 +117,6 @@ class ExampleActivity : CardBaseActivity() {
             // Once all the cards are detected, get rotation and start the OCR
             val rotation = getRotationCompensation(CAMERA_ID, this, false)
             CoroutineScope(Dispatchers.Default).launch {
-                val deferredTexts = mutableListOf<Deferred<String>>()
-
                 grid.forEachIndexed { index, card ->
                     val subframe = Mat(frame, card.boundingBox)
                     val deferredText = async {
@@ -131,11 +127,8 @@ class ExampleActivity : CardBaseActivity() {
                         }
                         textDeferred.await() // Wait for the CompletableDeferred to be completed
                     }
-                    // deferredTexts.add(deferredText)
                     card.text = deferredText.await()
                 }
-
-                // val texts = deferredTexts.awaitAll()
 
                 val gridTexts = grid.map { it.text }
                 Log.d(TAG, "Texts: $gridTexts")

@@ -12,17 +12,55 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.project2.ImageProcessing.Companion.divideFrameIntoGrid
+import com.example.project2.ImageProcessing.Companion.getAvgColor
+import com.example.project2.ImageProcessing.Companion.getClosestColor
+import com.example.project2.Utils.Companion.bitmap2mat
 import com.example.project2.ui.theme.Project2Theme
+import org.opencv.core.Mat
 
 class DetectedKeyActivity: ComponentActivity() {
+
+    fun getKey(bitmap: Bitmap, numRows: Int, numCols: Int): MutableList<Int> {
+        val mat : Mat = bitmap2mat(bitmap)
+
+        val targetColors = listOf(
+            android.graphics.Color.rgb(0, 0, 255), // blue
+            android.graphics.Color.rgb(255, 0, 0), // red
+            android.graphics.Color.rgb(0, 0, 0), // black
+            android.graphics.Color.rgb(245, 214, 147)) // yellowish
+
+        val grid = divideFrameIntoGrid(mat, numRows, numCols)
+
+        val guessedColors = mutableListOf<Int>()
+        for (i in 0 until numRows) {
+            for (j in 0 until numCols) {
+                val subframe = grid[i * numCols + j]
+                val avgColor = getAvgColor(subframe)
+
+                val closestColor = getClosestColor(avgColor, targetColors)
+                guessedColors.add(closestColor)
+                // guessedColors.add(avgColor)
+            }
+        }
+
+        return guessedColors
+    }
+
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,15 +69,17 @@ class DetectedKeyActivity: ComponentActivity() {
         // Get an image from the intent
         val byteArray = intent.getByteArrayExtra("frame")
         val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-        //
-        // val imageView = findViewById<ImageView>(R.id.imageView)
-        // imageView.setImageBitmap(bitmap)
+
+        val numRows = 5
+        val numCols = 5
+
+        val guessedColors = getKey(bitmap, numRows, numCols)
 
         enableEdgeToEdge()
         setContent {
             Project2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    DetectedKey(bitmap)
+                    DetectedKey(bitmap, guessedColors, numRows, numCols)
                 }
             }
         }
@@ -47,15 +87,37 @@ class DetectedKeyActivity: ComponentActivity() {
 }
 
 @Composable
-fun DetectedKey(picture: Bitmap){
+fun DetectedKey(
+    picture: Bitmap,
+    guessedColors: MutableList<Int>,
+    numRows: Int,
+    numCols: Int){
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
 
+        Text("Key Reference")
         Image(
             bitmap = picture.asImageBitmap(),
             contentDescription = "Detected Key",
         )
+        Spacer(modifier = Modifier.padding(40.dp))
+
+        Text("Detected Key")
+        for (i in 0 until numRows) {
+            Row {
+                for (j in 0 until numCols) {
+                    val bm = Bitmap.createBitmap(98, 98, Bitmap.Config.ARGB_8888)
+                    bm.eraseColor(guessedColors[i * numCols + j])
+                    Image(
+                        bitmap = bm.asImageBitmap(),
+                        contentDescription = "Detected Key",
+                        modifier = Modifier.padding(1.dp)
+                    )
+                }
+            }
+
+        }
 
     }
 
@@ -68,6 +130,6 @@ fun DetectedKeyPreview() {
     emptyBitmap.eraseColor(android.graphics.Color.RED)
 
     Project2Theme {
-        DetectedKey(emptyBitmap)
+        DetectedKey(emptyBitmap, MutableList(25){android.graphics.Color.RED}, 5, 5)
     }
 }
