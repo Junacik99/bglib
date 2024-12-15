@@ -1,6 +1,9 @@
 package com.example.project2
 
 import android.graphics.Color
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Rect
@@ -102,6 +105,31 @@ class ImageProcessing {
             val green = pixel[1].toInt()
             val red = pixel[2].toInt()
             return Color.rgb(red, green, blue)
+        }
+
+        fun getAvgColor(frame: Mat): Int{
+            val pixelCount = frame.height() * frame.width()
+            if (pixelCount == 0)
+                return Color.TRANSPARENT
+
+            var redSum = 0
+            var greenSum = 0
+            var blueSum = 0
+
+            for (x in 0 until frame.width()){
+                for (y in 0 until frame.height()){
+                    val color = getPixelColor(frame, x, y)
+                    redSum += color.red
+                    greenSum += color.green
+                    blueSum += color.blue
+                }
+            }
+
+            val avgRed = redSum / pixelCount
+            val avgGreen = greenSum / pixelCount
+            val avgBlue = blueSum / pixelCount
+
+            return Color.rgb(avgRed, avgGreen, avgBlue)
         }
 
         // Sorts unordered list of cards into uniform grid structure
