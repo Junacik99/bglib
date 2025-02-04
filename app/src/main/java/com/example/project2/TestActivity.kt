@@ -36,7 +36,7 @@ class TestActivity : CardBaseActivity()  {
 
         button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
-            saveFrame(lastFrame, this)
+            // saveFrame(lastFrame, this)
             Log.d(TAG, lastText.text)
 
             val intent = Intent(context, DetectedTextBlockActivity::class.java)

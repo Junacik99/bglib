@@ -66,10 +66,11 @@ fun DetectedCardText(textBlocks: List<ParcelableTextBlock>){
 
         OutlinedCard(modifier = Modifier.padding(10.dp).fillMaxSize()) {
             for (textBlock in textBlocks){
-                for (line in textBlock.lines){
-                    Text(text = line.text, fontSize = 20.sp, modifier = Modifier.padding(5.dp))
+                OutlinedCard(modifier = Modifier.padding(5.dp)) {
+                    for (line in textBlock.lines) {
+                        Text(text = line.text, fontSize = 20.sp, modifier = Modifier.padding(5.dp))
+                    }
                 }
-                Spacer(modifier = Modifier.padding(5.dp))
             }
         }
     }
