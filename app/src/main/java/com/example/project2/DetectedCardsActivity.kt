@@ -33,7 +33,12 @@ class DetectedCardsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         numberOfCards = intent.getIntExtra("numberOfCards", 0)
-        val cards = intent.getParcelableArrayListExtra("cards", Card::class.java) ?: emptyList()
+        val cards: List<Card> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableArrayListExtra("cards", Card::class.java) ?: emptyList()
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableArrayListExtra("cards") ?: emptyList()
+        }
         val rows = intent.getIntExtra("rows", 1)
         val cols = intent.getIntExtra("cols", 1)
 

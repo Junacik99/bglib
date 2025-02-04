@@ -53,7 +53,7 @@ fun HomeScreen(){
     var cardDetectMethod by remember { mutableStateOf("Otsu") }
     var ocrMethod by remember { mutableStateOf("Firebase") }
     var rows by remember { mutableIntStateOf(2) }
-    var cols by remember { mutableIntStateOf(2) }
+    var cols by remember { mutableIntStateOf(3) }
 
     // Everything Column
     Column (modifier = Modifier.fillMaxSize(),
