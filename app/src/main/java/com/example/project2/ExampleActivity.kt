@@ -8,22 +8,19 @@ import android.widget.Button
 import com.example.project2.CardDetection.Companion.detectRectCanny
 import com.example.project2.CardDetection.Companion.detectRectOtsu
 import com.example.project2.ImageProcessing.Companion.cards2grid
-import com.example.project2.TextDetection.Companion.detectText
+import com.example.project2.TextDetection.Companion.detectTextMLKit
 import com.example.project2.TextDetection.Companion.getRotationCompensation
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.core.Mat
 import org.opencv.core.Rect
-import kotlin.collections.toTypedArray
 
 class ExampleActivity : CardBaseActivity() {
     val context = this
@@ -121,9 +118,9 @@ class ExampleActivity : CardBaseActivity() {
                     val subframe = Mat(frame, card.boundingBox)
                     val deferredText = async {
                         val textDeferred = CompletableDeferred<String>()
-                        detectText(subframe, rotation, TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)) { detectedText ->
+                        detectTextMLKit(subframe, rotation, TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)) { detectedText ->
                             Log.d(TAG, "For rect $index the text is $detectedText")
-                            textDeferred.complete(detectedText) // Complete the CompletableDeferred with the detected text
+                            textDeferred.complete(detectedText.text) // Complete the CompletableDeferred with the detected text
                         }
                         textDeferred.await() // Wait for the CompletableDeferred to be completed
                     }

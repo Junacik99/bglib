@@ -1,11 +1,13 @@
 package com.example.project2
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,12 +27,13 @@ import org.opencv.core.Rect
 class DetectedCardsActivity : ComponentActivity() {
     private var numberOfCards = 0
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         numberOfCards = intent.getIntExtra("numberOfCards", 0)
-        val cards = intent.getParcelableArrayListExtra<Card>("cards") ?: emptyList()
+        val cards = intent.getParcelableArrayListExtra("cards", Card::class.java) ?: emptyList()
         val rows = intent.getIntExtra("rows", 1)
         val cols = intent.getIntExtra("cols", 1)
 
@@ -61,9 +64,9 @@ fun DetectedCards(numberOfRows: Int, numberOfCols: Int, cards: List<Card>){
 
         Spacer(modifier = Modifier.padding(40.dp))
         for (i in 0 until numberOfRows) {
-            Row() {
+            Row {
                 for (j in 0 until numberOfCols) {
-                    val card = cards.firstOrNull() { it.gridPos == gridPos(i, j) }
+                    val card = cards.firstOrNull { it.gridPos == gridPos(i, j) }
                     Text(card!!.text, modifier = Modifier.padding(10.dp))
                 }
             }

@@ -16,15 +16,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.TextDetection.Companion.detectText
-import com.example.project2.TextDetection.Companion.detectTextSuspend
+import com.example.project2.TextDetection.Companion.detectTextMLKit
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.opencv.android.CameraActivity
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
@@ -163,8 +159,8 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
         val rotation = getRotationCompensation(CAMERA_ID, this, false)
 
         // TODO: Possible solution: use coordinates of found text to assign to found card
-       detectText(frame, rotation, recognizer) { detectedText ->
-           textView.text = detectedText
+       detectTextMLKit(frame, rotation, recognizer) { detectedText ->
+           textView.text = detectedText.text
        }
 
         return frame

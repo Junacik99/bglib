@@ -117,6 +117,12 @@ fun HomeScreen(){
             }) {
             Text("Key Detection")
         }
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, TestActivity::class.java))
+            }) {
+            Text("Test")
+        }
     }
 
 }

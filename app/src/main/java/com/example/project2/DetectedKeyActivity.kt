@@ -96,14 +96,14 @@ fun DetectedKey(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
 
-        Text("Key Reference")
+        Text("Key Reference", modifier = Modifier.padding(10.dp))
         Image(
             bitmap = picture.asImageBitmap(),
             contentDescription = "Detected Key",
         )
         Spacer(modifier = Modifier.padding(40.dp))
 
-        Text("Detected Key")
+        Text("Detected Key", modifier = Modifier.padding(10.dp))
         for (i in 0 until numRows) {
             Row {
                 for (j in 0 until numCols) {
@@ -130,6 +130,6 @@ fun DetectedKeyPreview() {
     emptyBitmap.eraseColor(android.graphics.Color.RED)
 
     Project2Theme {
-        DetectedKey(emptyBitmap, MutableList(25){android.graphics.Color.RED}, 5, 5)
+        DetectedKey(emptyBitmap, MutableList(25){android.graphics.Color.BLUE}, 5, 5)
     }
 }

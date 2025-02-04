@@ -2,7 +2,6 @@ package com.example.project2
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -11,10 +10,10 @@ import android.util.SparseIntArray
 import android.view.Surface
 import com.example.project2.Utils.Companion.mat2bitmap
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognizer
 import com.googlecode.tesseract.android.TessBaseAPI
 import org.opencv.android.CameraActivity.CAMERA_SERVICE
-import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.imgproc.Imgproc
 import java.io.File
@@ -55,7 +54,7 @@ class TextDetection {
             return rotationCompensation
         }
 
-        fun detectText(frame: Mat, rotation: Int, textRecognizer: TextRecognizer, onResult: (String) -> Unit) {
+        fun detectTextMLKit(frame: Mat, rotation: Int, textRecognizer: TextRecognizer, onResult: (Text) -> Unit) {
             var gray = Mat()
             Imgproc.cvtColor(frame, gray, Imgproc.COLOR_RGBA2GRAY, 4)
 
@@ -68,11 +67,12 @@ class TextDetection {
             val result = textRecognizer.process(image)
                 .addOnSuccessListener { visionText ->
                     // Task completed successfully
-                    onResult(visionText.text)
+                    // onResult(visionText.text)
+                    onResult(visionText)
                 }
                 .addOnFailureListener { e: Exception ->
                     // Task failed with an exception
-                    onResult("Uh oh: ${e.message}")
+                    onResult(Text("Uh oh: ${e.message}", listOf(1)))
                 }
 
         }
@@ -80,8 +80,8 @@ class TextDetection {
         // Suspend function wrapper to detect text
         suspend fun detectTextSuspend(frame: Mat, rotation: Int, textRecognizer: TextRecognizer): String =
             suspendCoroutine { continuation ->
-                detectText(frame, rotation, textRecognizer) { text ->
-                    continuation.resumeWith(Result.success(text))
+                detectTextMLKit(frame, rotation, textRecognizer) { text ->
+                    continuation.resumeWith(Result.success(text.text))
                 }
             }
 

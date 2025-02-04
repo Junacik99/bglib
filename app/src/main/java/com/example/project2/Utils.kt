@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import org.opencv.android.Utils
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
@@ -110,6 +111,34 @@ class Utils {
                 resizedFrames.add(resizedFrame)
             }
             return resizedFrames
+        }
+
+        fun getLargestRect(rects: MutableList<Rect>):Rect? {
+            var largestRect: Rect? = null
+            var largestArea = 0
+
+            for (rect in rects) {
+                val area = rect.width * rect.height
+                if (area > largestArea) {
+                    largestArea = area
+                    largestRect = rect
+                }
+            }
+            return largestRect
+        }
+
+        fun getSmallestRect(rects: MutableList<Rect>):Rect? {
+            var smallestRect: Rect? = null
+            var smallestArea = 0
+
+            for (rect in rects) {
+                val area = rect.width * rect.height
+                if (area > smallestArea) {
+                    smallestArea = area
+                    smallestRect = rect
+                }
+            }
+            return smallestRect
         }
 
     }

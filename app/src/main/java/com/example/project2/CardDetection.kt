@@ -120,7 +120,7 @@ class CardDetection {
         /* Rectangle detection */
 
         // Preprocess the input image for edge detection
-        private fun grayGauss(inputImg: Mat) : Mat {
+        fun grayGauss(inputImg: Mat) : Mat {
             // Convert the input frame to grayscale
             val gray = Mat()
             Imgproc.cvtColor(inputImg, gray, Imgproc.COLOR_RGBA2GRAY)
