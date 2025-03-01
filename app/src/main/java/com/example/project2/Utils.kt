@@ -15,10 +15,12 @@ import androidx.core.content.ContextCompat
 import org.opencv.android.Utils
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.MatOfPoint2f
 import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import java.io.File
+import kotlin.math.atan2
 
 class Utils {
     companion object {
@@ -139,6 +141,19 @@ class Utils {
                 }
             }
             return smallestRect
+        }
+
+        // Calculate rotation angle of the rectangle
+        fun getRotationAngle(cornerPoints: MatOfPoint2f? = null): Double {
+            if (cornerPoints != null && cornerPoints.toArray().size == 4) {
+                // Calculate angle from corner points
+                val points = cornerPoints.toArray()
+                val dx = points[1].x - points[0].x
+                val dy = points[1].y - points[0].y
+                return Math.toDegrees(atan2(dy, dx))
+            } else {
+                return 0.0
+            }
         }
 
     }

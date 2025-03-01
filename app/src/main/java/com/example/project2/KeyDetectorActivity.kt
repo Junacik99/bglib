@@ -11,8 +11,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.ImageProcessing.Companion.divideFrameIntoGrid
+import com.example.project2.CardDetection.Companion.getBoundingBoxes
+import com.example.project2.ImageProcessing.Companion.rotateImage
+import com.example.project2.TextDetection.Companion.getRotationCompensation
 import com.example.project2.Utils.Companion.checkCamPermission
+import com.example.project2.Utils.Companion.getRotationAngle
 import com.example.project2.Utils.Companion.mat2bitmap
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
@@ -24,15 +27,21 @@ class KeyDetectorActivity: CardBaseActivity() {
     private var button: Button? = null
     private var lastKey: Mat? = null
     private var keyIndicator: TextView? = null
+    private var keyRotation: Double = 0.0
 
     fun getCardKey(frame:Mat) : Mat? {
         val rects = detectRectOtsu(frame, drawBoundingBoxes = true)
+        val boundingBoxes = getBoundingBoxes(frame, rects)
 
         // Whole card and the key
-        if (rects.size == 2){
+        if (boundingBoxes.size == 2){
             // The smaller rect is the key
-            val key = rects.minBy { it.area() }
-            val subframe = frame.submat(key)
+            val keyBB = boundingBoxes.minBy { it.area() }
+            val key = rects.minBy { it.height()*it.width() }
+            val subframe = frame.submat(keyBB)
+
+            // Get key rotation
+            keyRotation = getRotationAngle(key)
 
             return subframe
         }
@@ -53,7 +62,7 @@ class KeyDetectorActivity: CardBaseActivity() {
         button?.setOnClickListener {
             // Pass the frame to the next activity
             try {
-                // Conver last detected key to bitmap
+                // Convert last detected key to bitmap
                 val stream = ByteArrayOutputStream()
                 val frameBitmap = mat2bitmap(lastKey!!)
                 frameBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) // or JPEG, WebP
@@ -98,7 +107,12 @@ class KeyDetectorActivity: CardBaseActivity() {
         val frame = inputFrame.rgba()
         val key = getCardKey(frame) ?: return frame
 
-        lastKey = key
+        // Rotate the key
+        val rotatedKey = rotateImage(key, keyRotation)
+
+        Log.d(TAG, "Key rotation: $keyRotation")
+
+        lastKey = rotatedKey
 
         runOnUiThread {
             keyIndicator?.text = "Key detected"
@@ -110,10 +124,6 @@ class KeyDetectorActivity: CardBaseActivity() {
         // TODO: Rotate the key so it's upright for grid splitting
 
         // TODO: Process a frame and return it probably in a coroutine
-
-        // TODO: Pass the frame to the next activity
-        // TODO: Display an image in the activity
-        // TODO: Study and write functions for image processing, such as filtering and enhancements, etc.
 
         return frame
     }

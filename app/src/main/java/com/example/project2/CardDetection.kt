@@ -1,6 +1,7 @@
 package com.example.project2
 
 import android.content.Context
+import android.util.Log
 import com.googlecode.tesseract.android.TessBaseAPI
 import org.opencv.core.CvType
 import org.opencv.core.Mat
@@ -77,8 +78,32 @@ class CardDetection {
         /*****************************************************************************************/
         /* Utility functions */
 
+        fun drawRectangle(
+            frame: Mat,
+            rectangle: MatOfPoint2f,
+            contourColor: Scalar = Scalar(0.0, 255.0, 0.0),
+        ){
+            Imgproc.drawContours(frame, listOf(MatOfPoint(*rectangle.toArray())), -1, contourColor, 2)
+        }
+
+        fun getBoundingBoxes(
+            frame: Mat,
+            rectangles: MutableList<MatOfPoint2f>,
+            drawBoundingBoxes: Boolean = false,
+            boundingBoxColor: Scalar = Scalar(255.0, 0.0, 0.0),
+        ): MutableList<Rect> {
+            val bbs = mutableListOf<Rect>()
+            for (rectangle in rectangles) {
+                val bb = Imgproc.boundingRect(MatOfPoint(*rectangle.toArray()))
+                bbs.add(bb)
+                if (drawBoundingBoxes) Imgproc.rectangle(frame, bb, boundingBoxColor, 2)
+            }
+            return bbs
+        }
+
+
         // Draw rectangle around contours inside the input image
-        private fun drawRectangle(
+        private fun drawRectangleOld(
             frame : Mat,
             contours : MutableList<MatOfPoint>,
             drawBoundingBoxes : Boolean=false,
@@ -115,6 +140,36 @@ class CardDetection {
             return boundingBoxes
         }
 
+        // Get rectangles from contours inside the input image
+        private fun getRectangles(
+            frame : Mat,
+            contours : MutableList<MatOfPoint>,
+            filterMaxArea : Float = 0.9f,
+            filterMinArea : Float = 0.02f
+        ) : MutableList<MatOfPoint2f>
+        {
+            val frameArea = frame.size().height * frame.size().width
+
+            val rectangles = mutableListOf<MatOfPoint2f>()
+
+            for (contour in contours) {
+                // Filter out small and big contours that are not likely to be cards
+                if (Imgproc.contourArea(contour) < frameArea * filterMinArea) continue
+                if (Imgproc.contourArea(contour) > frameArea * filterMaxArea) continue
+
+                // Approximate contour to a polygon
+                val approx = MatOfPoint2f()
+                Imgproc.approxPolyDP(MatOfPoint2f(*contour.toArray()), approx, 0.02 * Imgproc.arcLength(MatOfPoint2f(*contour.toArray()), true), true)
+
+                // Check if polygon has 4 vertices (rectangle-like), which is likely a card
+                if (approx.toArray().size == 4) {
+                    rectangles.add(approx)
+                }
+            }
+
+            return rectangles
+        }
+
 
         /*****************************************************************************************/
         /* Rectangle detection */
@@ -132,7 +187,11 @@ class CardDetection {
         }
 
         // Detect rectangle using Canny edge detection
-        fun detectRectCanny(frame: Mat): MutableList<Rect> {
+        fun detectRectCanny(
+            frame: Mat,
+            drawBoundingBoxes: Boolean = false,
+            drawContours: Boolean = false
+        ): MutableList<MatOfPoint2f> {
             val gray = grayGauss(frame)
 
             // Canny edge detection
@@ -143,7 +202,15 @@ class CardDetection {
             val contours = mutableListOf<MatOfPoint>()
             Imgproc.findContours(edges, contours, Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
 
-            val rectangles = drawRectangle(frame, contours)
+            val rectangles = getRectangles(frame, contours)
+
+            if (drawContours) {
+                for (rect in rectangles) {
+                    drawRectangle(frame, rect)
+                }
+            }
+
+            // val bbs = getBoundingBoxes(frame, rectangles, drawBoundingBoxes)
 
             // Release resources
             gray.release()
@@ -156,7 +223,7 @@ class CardDetection {
             frame: Mat,
             drawBoundingBoxes: Boolean = false,
             drawContours: Boolean = false
-        ): MutableList<Rect> {
+        ): MutableList<MatOfPoint2f> {
             // Convert to grayscale and apply Gauss blur
             val gray = grayGauss(frame)
 
@@ -168,7 +235,15 @@ class CardDetection {
             val contours = mutableListOf<MatOfPoint>()
             Imgproc.findContours(binary, contours, Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
 
-            val rectangles = drawRectangle(frame, contours, drawBoundingBoxes, drawContours)
+            val rectangles = getRectangles(frame, contours)
+
+            if (drawContours) {
+                for (rect in rectangles) {
+                    drawRectangle(frame, rect)
+                }
+            }
+
+            // val bbs = getBoundingBoxes(frame, rectangles, drawBoundingBoxes)
 
             // Release resources
             gray.release()
@@ -188,6 +263,5 @@ class CardDetection {
 
     // TODO:
     // clustering (K means?)
-    // create card DATA class with various properties like text, picture, number, etc on different locations
-    // Arrange cards in matrix
+    // add various properties like text, picture, number, etc on different locations to Card data class
 }

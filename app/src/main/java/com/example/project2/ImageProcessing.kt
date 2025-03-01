@@ -7,6 +7,7 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.Point
 import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
@@ -196,6 +197,33 @@ class ImageProcessing {
             }
 
             return grid
+        }
+
+        fun rotateImage(source: Mat, degrees: Double): Mat {
+            val sourceSize = source.size()
+            val center = Point(sourceSize.width / 2, sourceSize.height / 2)
+
+            // Create the rotation matrix
+            val rotationMatrix = Imgproc.getRotationMatrix2D(center, degrees, 1.0)
+
+            // Calculate the new size of the rotated image
+            val cos = abs(rotationMatrix.get(0, 0)[0])
+            val sin = abs(rotationMatrix.get(0, 1)[0])
+            val newWidth = (sourceSize.height * sin) + (sourceSize.width * cos)
+            val newHeight = (sourceSize.width * sin) + (sourceSize.height * cos)
+            val newSize = org.opencv.core.Size(newWidth, newHeight)
+
+            // Adjust the rotation matrix to take into account the translation
+            rotationMatrix.put(0, 2, rotationMatrix.get(0, 2)[0] + newWidth / 2 - center.x)
+            rotationMatrix.put(1, 2, rotationMatrix.get(1, 2)[0] + newHeight / 2 - center.y)
+
+            // Create the destination Mat
+            val destination = Mat(newSize, source.type())
+
+            // Apply the rotation
+            Imgproc.warpAffine(source, destination, rotationMatrix, newSize)
+
+            return destination
         }
     }
 }

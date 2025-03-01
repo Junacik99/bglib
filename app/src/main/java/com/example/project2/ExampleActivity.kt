@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import com.example.project2.CardDetection.Companion.detectRectCanny
 import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.CardDetection.Companion.getBoundingBoxes
 import com.example.project2.ImageProcessing.Companion.cards2grid
 import com.example.project2.TextDetection.Companion.detectTextMLKit
 import com.example.project2.TextDetection.Companion.getRotationCompensation
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.core.Mat
+import org.opencv.core.MatOfPoint2f
 import org.opencv.core.Rect
 
 class ExampleActivity : CardBaseActivity() {
@@ -77,16 +79,18 @@ class ExampleActivity : CardBaseActivity() {
     // Detect number of cards
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
-        val rects = when (cardDetectMethod) {
+        var rectangles = mutableListOf<MatOfPoint2f>()
+        rectangles = when (cardDetectMethod) {
             "Otsu" -> detectRectOtsu(frame)
             "Canny" -> detectRectCanny(frame)
-            else -> mutableListOf<Rect>()
+            else -> mutableListOf<MatOfPoint2f>()
         }
+        val boundingBoxes = getBoundingBoxes(frame, rectangles)
 
-        if (rects.size == numberOfCards && !activityStarted) {
+        if (boundingBoxes.size == numberOfCards && !activityStarted) {
             // Check if rects are cards
             try {
-                rects.forEachIndexed{
+                boundingBoxes.forEachIndexed{
                         index, rect ->
                     val subframe = Mat(frame, rect)
                     val inputData = modelInterpreter.preprocessMat(subframe)
@@ -108,7 +112,7 @@ class ExampleActivity : CardBaseActivity() {
             mediaPlayer?.start()
 
             // Align cards into the grid
-            val grid = ArrayList(cards2grid(rects, rows, cols))
+            val grid = ArrayList(cards2grid(boundingBoxes, rows, cols))
             Log.d(TAG, "Grid: $grid")
 
             // Once all the cards are detected, get rotation and start the OCR
@@ -153,7 +157,7 @@ class ExampleActivity : CardBaseActivity() {
 
         }
 
-        latestRects = rects
+        latestRects = boundingBoxes
         latestFrame = frame
 
         return frame

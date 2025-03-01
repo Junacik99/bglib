@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.CardDetection.Companion.getBoundingBoxes
 import com.example.project2.TextDetection.Companion.detectTextMLKit
 import com.example.project2.TextDetection.Companion.getRotationCompensation
 import com.example.project2.Utils.Companion.getLargestRect
@@ -57,7 +58,8 @@ class TestActivity : CardBaseActivity()  {
         val frame = inputFrame.rgba()
 
         val rects = detectRectOtsu(frame, drawBoundingBoxes = true)
-        val cardRect = getLargestRect(rects)
+        val bbs = getBoundingBoxes(frame, rects)
+        val cardRect = getLargestRect(bbs)
 
         var cardText = Text("No text detected", listOf(1))
         if (cardRect != null) {

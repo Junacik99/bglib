@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.project2.CardDetection.Companion.detectRectOtsu
+import com.example.project2.CardDetection.Companion.getBoundingBoxes
 import com.example.project2.Utils.Companion.checkCamPermission
 import com.example.project2.Utils.Companion.resizeFrames
 import com.example.project2.Utils.Companion.saveFrames
@@ -111,8 +112,9 @@ class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
         val rects = detectRectOtsu(frame, drawContours = false, drawBoundingBoxes = true)
+        val bbs = getBoundingBoxes(frame, rects)
 
-        subframes = rects.map { rect -> Mat(frame, rect)}.toMutableList()
+        subframes = bbs.map { rect -> Mat(frame, rect)}.toMutableList()
 
         return frame
     }
