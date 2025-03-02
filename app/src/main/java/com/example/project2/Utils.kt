@@ -156,5 +156,30 @@ class Utils {
             }
         }
 
+        fun matOfPoint2ftoMat(matOfPoint2f: MatOfPoint2f): Mat {
+            // Get the array of Point objects from MatOfPoint2f
+            val points = matOfPoint2f.toArray()
+
+            // Determine the number of points
+            val numPoints = points.size
+
+            // Create a Mat with the appropriate size and type
+            val mat = Mat(numPoints, 1, CvType.CV_32FC2)
+
+            // Iterate through the points and populate the Mat
+            for (i in points.indices) {
+                // Get the data array for the current row
+                val data = FloatArray(2)
+                data[0] = points[i].x.toFloat()
+                data[1] = points[i].y.toFloat()
+
+                // Put the data into the Mat
+                mat.put(i, 0, data)
+            }
+
+            return mat
+        }
+
+
     }
 }

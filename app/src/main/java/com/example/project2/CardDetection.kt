@@ -192,6 +192,8 @@ class CardDetection {
             drawBoundingBoxes: Boolean = false,
             drawContours: Boolean = false
         ): MutableList<MatOfPoint2f> {
+            if (frame.channels() != 3) Log.e("OCVSample::Activity", "Input frame must have 3 channels")
+
             val gray = grayGauss(frame)
 
             // Canny edge detection
@@ -210,7 +212,8 @@ class CardDetection {
                 }
             }
 
-            // val bbs = getBoundingBoxes(frame, rectangles, drawBoundingBoxes)
+            if (drawBoundingBoxes)
+                getBoundingBoxes(frame, rectangles, true)
 
             // Release resources
             gray.release()
@@ -224,6 +227,8 @@ class CardDetection {
             drawBoundingBoxes: Boolean = false,
             drawContours: Boolean = false
         ): MutableList<MatOfPoint2f> {
+            if (frame.channels() != 3) Log.e("CardDetection", "Input frame must have 3 channels")
+
             // Convert to grayscale and apply Gauss blur
             val gray = grayGauss(frame)
 
@@ -243,7 +248,8 @@ class CardDetection {
                 }
             }
 
-            // val bbs = getBoundingBoxes(frame, rectangles, drawBoundingBoxes)
+            if (drawBoundingBoxes)
+                getBoundingBoxes(frame, rectangles, true)
 
             // Release resources
             gray.release()

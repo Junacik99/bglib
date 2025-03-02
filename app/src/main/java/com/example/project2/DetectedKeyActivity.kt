@@ -26,14 +26,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.project2.CardDetection.Companion.detectRectOtsu
 import com.example.project2.ImageProcessing.Companion.divideFrameIntoGrid
 import com.example.project2.ImageProcessing.Companion.getAvgColor
 import com.example.project2.ImageProcessing.Companion.getClosestColor
 import com.example.project2.Utils.Companion.bitmap2mat
+import com.example.project2.Utils.Companion.mat2bitmap
 import com.example.project2.ui.theme.Project2Theme
 import org.opencv.core.Mat
 
 class DetectedKeyActivity: ComponentActivity() {
+
+    var globalBitmap: Bitmap? = null
 
     fun getKey(bitmap: Bitmap, numRows: Int, numCols: Int): MutableList<Int> {
         val mat : Mat = bitmap2mat(bitmap)
@@ -44,7 +48,18 @@ class DetectedKeyActivity: ComponentActivity() {
             android.graphics.Color.rgb(0, 0, 0), // black
             android.graphics.Color.rgb(245, 214, 147)) // yellowish
 
+        // TODO: Crop the image to the key
+        val rects = detectRectOtsu(mat, drawContours = true, drawBoundingBoxes = true)
+        for (rect in rects) {
+            Log.d("OCVSample::Activity", "Rect:")
+            for (point in rect.toArray()) {
+                Log.d("OCVSample::Activity", "Point: (${point.x}, ${point.y})")
+            }
+        }
+        globalBitmap = mat2bitmap(mat)
+
         val grid = divideFrameIntoGrid(mat, numRows, numCols)
+
 
         val guessedColors = mutableListOf<Int>()
         for (i in 0 until numRows) {
@@ -54,7 +69,6 @@ class DetectedKeyActivity: ComponentActivity() {
 
                 val closestColor = getClosestColor(avgColor, targetColors)
                 guessedColors.add(closestColor)
-                // guessedColors.add(avgColor)
             }
         }
 
@@ -79,7 +93,7 @@ class DetectedKeyActivity: ComponentActivity() {
         setContent {
             Project2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    DetectedKey(bitmap, guessedColors, numRows, numCols)
+                    globalBitmap?.let { it1 -> DetectedKey(it1, guessedColors, numRows, numCols) }
                 }
             }
         }
@@ -96,6 +110,7 @@ fun DetectedKey(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
 
+        // Key reference
         Text("Key Reference", modifier = Modifier.padding(10.dp))
         Image(
             bitmap = picture.asImageBitmap(),
@@ -103,6 +118,7 @@ fun DetectedKey(
         )
         Spacer(modifier = Modifier.padding(40.dp))
 
+        // Detected key
         Text("Detected Key", modifier = Modifier.padding(10.dp))
         for (i in 0 until numRows) {
             Row {

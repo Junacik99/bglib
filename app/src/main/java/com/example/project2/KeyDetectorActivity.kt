@@ -20,6 +20,9 @@ import com.example.project2.Utils.Companion.mat2bitmap
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
+import org.opencv.core.Point
+import org.opencv.core.Rect
+import org.opencv.imgproc.Imgproc
 import java.io.ByteArrayOutputStream
 
 class KeyDetectorActivity: CardBaseActivity() {
@@ -38,10 +41,23 @@ class KeyDetectorActivity: CardBaseActivity() {
             // The smaller rect is the key
             val keyBB = boundingBoxes.minBy { it.area() }
             val key = rects.minBy { it.height()*it.width() }
-            val subframe = frame.submat(keyBB)
 
             // Get key rotation
             keyRotation = getRotationAngle(key)
+
+            // Get rotation matrix
+            val center: Point = Point(keyBB.x + keyBB.width / 2.0, keyBB.y + keyBB.height / 2.0)
+            val rotMat = Imgproc.getRotationMatrix2D(center, keyRotation, 1.0)
+
+            val points = DoubleArray(4*2)
+            for (i in key.toArray().indices){
+                val point = key.toArray()[i] // TODO: Multiply by rotation matrix
+                points[i*2] = point.x
+                points[i*2+1] = point.y
+            }
+            val rect = Rect(points)
+
+            val subframe = frame.submat(rect)
 
             return subframe
         }
@@ -110,7 +126,7 @@ class KeyDetectorActivity: CardBaseActivity() {
         // Rotate the key
         val rotatedKey = rotateImage(key, keyRotation)
 
-        Log.d(TAG, "Key rotation: $keyRotation")
+        // Log.d(TAG, "Key rotation: $keyRotation")
 
         lastKey = rotatedKey
 
@@ -121,7 +137,6 @@ class KeyDetectorActivity: CardBaseActivity() {
         }
 
 
-        // TODO: Rotate the key so it's upright for grid splitting
 
         // TODO: Process a frame and return it probably in a coroutine
 
