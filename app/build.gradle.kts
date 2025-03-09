@@ -43,7 +43,7 @@ android {
         compose = true
     }
 
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = "35.0.0"
 }
 
 dependencies {
@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(project(":openCV"))
+//    implementation(project(":openCV"))
     implementation(libs.tess.two)
     implementation(libs.mfl.core)
     implementation(libs.litert)
@@ -71,4 +71,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
     implementation(libs.kotlin.script.runtime)
+    implementation(libs.opencv)
 }

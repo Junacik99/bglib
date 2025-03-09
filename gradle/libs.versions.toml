@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.1"
+agp = "8.9.0"
 jmatio = "1.2"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -14,6 +14,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseMlVision = "24.1.0"
 litert = "1.0.1"
 mflCore = "0.5.15"
+opencv = "4.8.0"
 playServicesMlkitTextRecognitionCommon = "19.1.0"
 playServicesMlkitTextRecognition = "19.0.1"
 tensorflowLite = "2.12.0"
@@ -40,6 +41,7 @@ firebase-ml-vision = { group = "com.google.firebase", name = "firebase-ml-vision
 kotlin-script-runtime = { module = "org.jetbrains.kotlin:kotlin-script-runtime", version.ref = "kotlinScriptRuntime" }
 litert = { module = "com.google.ai.edge.litert:litert", version.ref = "litert" }
 mfl-core = { module = "us.hebi.matlab.mat:mfl-core", version.ref = "mflCore" }
+opencv = { module = "org.opencv:opencv", version = "4.11.0" }
 play-services-mlkit-text-recognition-common = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-common", version.ref = "playServicesMlkitTextRecognitionCommon" }
 play-services-mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
 tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflowLite" }
