@@ -13,9 +13,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import org.opencv.android.Utils
+import org.opencv.core.Core
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint2f
+import org.opencv.core.Point
 import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
@@ -178,6 +180,60 @@ class Utils {
             }
 
             return mat
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun mulPointbyMatOld(point: Point, mat: Mat): Point {
+//            val pointMat = Mat(3, 3, CvType.CV_64F)
+//            pointMat.put(0, 0, point.x)
+//            pointMat.put(0, 1, point.y)
+//            pointMat.put(0, 2, 1.0)
+
+//            val dst = mat.matMul(pointMat)
+//            return Point(dst.get(0,0)[0], dst.get(0, 1)[0])
+
+            val x = mat.get(0, 0)[0] * point.x + mat.get(0, 1)[0] * point.y
+            val y = mat.get(1, 0)[0] * point.x + mat.get(1, 1)[0] * point.y
+            return Point(x, y)
+        }
+
+        fun mulPointbyMat(point: Point, mat: Mat): Point {
+            // Ensure the transformation matrix is a 2x3
+            if (mat.rows() != 2 || mat.cols() != 3) {
+                throw IllegalArgumentException("Transformation matrix must be 2x3.")
+            }
+
+            // Ensure the transformation matrix is of type CV_64F
+            if (mat.type() != CvType.CV_64F) {
+                throw IllegalArgumentException("Transformation matrix type must be CV_64F.")
+            }
+
+            // 1. Create a 3x1 matrix (column vector) to represent the point in homogeneous coordinates
+            val pointMat = Mat(3, 1, CvType.CV_64F)
+
+            // 2. Put the point's x, y, and the homogeneous coordinate (1.0) into the matrix
+            pointMat.put(0, 0, point.x)
+            pointMat.put(1, 0, point.y)
+            pointMat.put(2, 0, 1.0)
+
+            // 3. Perform the matrix multiplication
+            val transformMat = Mat(3, 1, CvType.CV_64F)
+            val resultMat = Mat(2, 1, CvType.CV_64F)
+
+            Core.gemm(mat, pointMat, 1.0, Mat(), 0.0, resultMat)
+
+            val transformedData = DoubleArray(2)
+
+            resultMat.get(0, 0, transformedData)
+
+            val transformedX = transformedData[0]
+            val transformedY = transformedData[1]
+
+            pointMat.release()
+            transformMat.release()
+            resultMat.release()
+
+            return Point(transformedX, transformedY)
         }
 
 

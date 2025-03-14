@@ -4,11 +4,13 @@ import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.example.project2.CardDetection.Companion.detectRectOtsu
 import com.example.project2.CardDetection.Companion.getBoundingBoxes
@@ -17,13 +19,20 @@ import com.example.project2.TextDetection.Companion.getRotationCompensation
 import com.example.project2.Utils.Companion.checkCamPermission
 import com.example.project2.Utils.Companion.getRotationAngle
 import com.example.project2.Utils.Companion.mat2bitmap
+import com.example.project2.Utils.Companion.mulPointbyMat
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
+import org.opencv.core.Core
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Point
 import org.opencv.core.Rect
 import org.opencv.imgproc.Imgproc
 import java.io.ByteArrayOutputStream
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
 
 class KeyDetectorActivity: CardBaseActivity() {
 
@@ -41,23 +50,10 @@ class KeyDetectorActivity: CardBaseActivity() {
             // The smaller rect is the key
             val keyBB = boundingBoxes.minBy { it.area() }
             val key = rects.minBy { it.height()*it.width() }
+            val subframe = frame.submat(keyBB)
 
             // Get key rotation
             keyRotation = getRotationAngle(key)
-
-            // Get rotation matrix
-            val center: Point = Point(keyBB.x + keyBB.width / 2.0, keyBB.y + keyBB.height / 2.0)
-            val rotMat = Imgproc.getRotationMatrix2D(center, keyRotation, 1.0)
-
-            val points = DoubleArray(4*2)
-            for (i in key.toArray().indices){
-                val point = key.toArray()[i] // TODO: Multiply by rotation matrix
-                points[i*2] = point.x
-                points[i*2+1] = point.y
-            }
-            val rect = Rect(points)
-
-            val subframe = frame.submat(rect)
 
             return subframe
         }
