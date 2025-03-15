@@ -1,16 +1,15 @@
-package com.example.project2
+package com.example.bglib
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.CardDetection.Companion.getBoundingBoxes
-import com.example.project2.TextDetection.Companion.detectTextMLKit
-import com.example.project2.TextDetection.Companion.getRotationCompensation
-import com.example.project2.Utils.Companion.getLargestRect
-import com.example.project2.Utils.Companion.saveFrame
+import com.example.bglib.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.CardDetection.Companion.getBoundingBoxes
+import com.example.bglib.TextDetection.Companion.detectTextMLKit
+import com.example.bglib.TextDetection.Companion.getRotationCompensation
+import com.example.bglib.Utils.Companion.getLargestRect
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -19,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.core.Mat
 

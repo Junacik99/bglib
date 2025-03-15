@@ -1,38 +1,25 @@
-package com.example.project2
+package com.example.bglib
 
 import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.CardDetection.Companion.getBoundingBoxes
-import com.example.project2.ImageProcessing.Companion.rotateImage
-import com.example.project2.TextDetection.Companion.getRotationCompensation
-import com.example.project2.Utils.Companion.checkCamPermission
-import com.example.project2.Utils.Companion.getRotationAngle
-import com.example.project2.Utils.Companion.mat2bitmap
-import com.example.project2.Utils.Companion.mulPointbyMat
+import com.example.bglib.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.CardDetection.Companion.getBoundingBoxes
+import com.example.bglib.ImageProcessing.Companion.rotateImage
+import com.example.bglib.Utils.Companion.checkCamPermission
+import com.example.bglib.Utils.Companion.getRotationAngle
+import com.example.bglib.Utils.Companion.mat2bitmap
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
-import org.opencv.core.Core
-import org.opencv.core.CvType
 import org.opencv.core.Mat
-import org.opencv.core.Point
-import org.opencv.core.Rect
-import org.opencv.imgproc.Imgproc
 import java.io.ByteArrayOutputStream
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sin
 
 class KeyDetectorActivity: CardBaseActivity() {
 

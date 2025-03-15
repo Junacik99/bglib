@@ -1,4 +1,4 @@
-package com.example.project2
+package com.example.bglib
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.project2.ui.theme.Project2Theme
+import com.example.bglib.ui.theme.Project2Theme
 import org.opencv.core.Rect
 
 class DetectedCardsActivity : ComponentActivity() {

@@ -1,16 +1,16 @@
-package com.example.project2
+package com.example.bglib
 
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import com.example.project2.CardDetection.Companion.detectRectCanny
-import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.CardDetection.Companion.getBoundingBoxes
-import com.example.project2.ImageProcessing.Companion.cards2grid
-import com.example.project2.TextDetection.Companion.detectTextMLKit
-import com.example.project2.TextDetection.Companion.getRotationCompensation
+import com.example.bglib.CardDetection.Companion.detectRectCanny
+import com.example.bglib.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.CardDetection.Companion.getBoundingBoxes
+import com.example.bglib.ImageProcessing.Companion.cards2grid
+import com.example.bglib.TextDetection.Companion.detectTextMLKit
+import com.example.bglib.TextDetection.Companion.getRotationCompensation
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.CompletableDeferred

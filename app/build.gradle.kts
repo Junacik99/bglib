@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.project2"
+    namespace = "com.example.bglib"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.project2"
+        applicationId = "com.example.bglib"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -56,7 +56,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-//    implementation(project(":openCV"))
     implementation(libs.tess.two)
     implementation(libs.mfl.core)
     implementation(libs.litert)

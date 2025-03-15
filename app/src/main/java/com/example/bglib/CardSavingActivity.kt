@@ -1,9 +1,8 @@
-package com.example.project2
+package com.example.bglib
 
 import android.Manifest
 import android.annotation.SuppressLint
 
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,12 +12,11 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.CardDetection.Companion.getBoundingBoxes
-import com.example.project2.Utils.Companion.checkCamPermission
-import com.example.project2.Utils.Companion.resizeFrames
-import com.example.project2.Utils.Companion.saveFrames
+import com.example.bglib.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.CardDetection.Companion.getBoundingBoxes
+import com.example.bglib.Utils.Companion.checkCamPermission
+import com.example.bglib.Utils.Companion.resizeFrames
+import com.example.bglib.Utils.Companion.saveFrames
 import org.opencv.android.CameraActivity
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2

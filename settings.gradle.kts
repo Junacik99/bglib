@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "project2"
+rootProject.name = "bglib"
 include(":app")
 include(":openCV")

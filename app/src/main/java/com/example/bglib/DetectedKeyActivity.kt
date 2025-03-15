@@ -1,9 +1,8 @@
-package com.example.project2
+package com.example.bglib
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Picture
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -19,20 +18,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.project2.CardDetection.Companion.detectRectOtsu
-import com.example.project2.ImageProcessing.Companion.divideFrameIntoGrid
-import com.example.project2.ImageProcessing.Companion.getAvgColor
-import com.example.project2.ImageProcessing.Companion.getClosestColor
-import com.example.project2.Utils.Companion.bitmap2mat
-import com.example.project2.Utils.Companion.mat2bitmap
-import com.example.project2.ui.theme.Project2Theme
+import com.example.bglib.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.ImageProcessing.Companion.divideFrameIntoGrid
+import com.example.bglib.ImageProcessing.Companion.getAvgColor
+import com.example.bglib.ImageProcessing.Companion.getClosestColor
+import com.example.bglib.Utils.Companion.bitmap2mat
+import com.example.bglib.Utils.Companion.mat2bitmap
+import com.example.bglib.ui.theme.Project2Theme
 import org.opencv.core.Mat
 
 class DetectedKeyActivity: ComponentActivity() {

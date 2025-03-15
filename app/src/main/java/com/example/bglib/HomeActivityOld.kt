@@ -1,4 +1,4 @@
-package com.example.project2
+package com.example.bglib
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,11 +20,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.project2.ui.theme.Project2Theme
+import com.example.bglib.ui.theme.Project2Theme
 
 class HomeActivityOld : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.example.project2
+package com.example.bglib
 
 import android.content.Context
 import android.util.Log

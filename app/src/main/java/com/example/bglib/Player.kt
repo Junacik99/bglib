@@ -1,4 +1,4 @@
-package com.example.project2
+package com.example.bglib
 
 class Player (id: Int) {
     // Name
@@ -9,6 +9,8 @@ class Player (id: Int) {
     var moveCount: Int = 0
     // Cards
     val cards: MutableList<Card> = mutableListOf()
+
+    var isWinner = this.winCondition()
 
     init {
 
@@ -32,6 +34,11 @@ class Player (id: Int) {
 
     fun resetScore() {
         this.score = 0
+    }
+
+    fun winCondition(): Boolean {
+        // TODO: Add win condition logic
+        return false
     }
 
 }

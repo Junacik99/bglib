@@ -1,4 +1,4 @@
-package com.example.project2
+package com.example.bglib
 
 import android.Manifest
 import android.os.Bundle
@@ -9,7 +9,7 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.project2.Utils.Companion.checkCamPermission
+import com.example.bglib.Utils.Companion.checkCamPermission
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import org.opencv.android.CameraActivity

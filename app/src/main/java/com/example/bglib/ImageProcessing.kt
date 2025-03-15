@@ -1,7 +1,6 @@
-package com.example.project2
+package com.example.bglib
 
 import android.graphics.Color
-import android.util.Log
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
