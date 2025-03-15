@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bglib.demos.ScoreActivity
 import com.example.bglib.ui.theme.BglibTheme
 
 class HomeActivity : ComponentActivity() {
@@ -115,6 +116,12 @@ fun HomeScreen(){
                 context.startActivity(Intent(context, KeyDetectorActivity::class.java))
             }) {
             Text("Key Detection")
+        }
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, ScoreActivity::class.java))
+            }) {
+            Text("Score")
         }
         Button(
             onClick = {

@@ -1,26 +1,17 @@
 package com.example.bglib
 
-class Team (id: Int) {
-    val players = mutableListOf<Player>()
+import java.util.concurrent.atomic.AtomicInteger
 
-    var score: Int = 0
+open class Team (teamName: String = "") : Playable(teamName) {
+    companion object {
+        val nextId = AtomicInteger(1)
+    }
+    override val id: Int = nextId.getAndIncrement()
 
-    var isWinner = this.winCondition()
+    open val players = mutableListOf<Player>()
 
     // TODO: Override these methods as needed
-    fun updateScore(){
+    open fun updateScore(){
         this.score = players.sumOf { it.score }
-    }
-
-    fun updateScore(score: Int) {
-        this.score += score
-    }
-
-    fun resetScore() {
-        this.score = 0
-    }
-
-    fun winCondition(): Boolean {
-        return false
     }
 }
