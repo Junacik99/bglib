@@ -29,8 +29,9 @@ import com.example.bglib.ImageProcessing.Companion.getAvgColor
 import com.example.bglib.ImageProcessing.Companion.getClosestColor
 import com.example.bglib.Utils.Companion.bitmap2mat
 import com.example.bglib.Utils.Companion.mat2bitmap
-import com.example.bglib.ui.theme.Project2Theme
+import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.core.Mat
+import androidx.core.graphics.createBitmap
 
 class DetectedKeyActivity: ComponentActivity() {
 
@@ -88,7 +89,7 @@ class DetectedKeyActivity: ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            Project2Theme {
+            BglibTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     globalBitmap?.let { it1 -> DetectedKey(it1, guessedColors, numRows, numCols) }
                 }
@@ -120,7 +121,7 @@ fun DetectedKey(
         for (i in 0 until numRows) {
             Row {
                 for (j in 0 until numCols) {
-                    val bm = Bitmap.createBitmap(98, 98, Bitmap.Config.ARGB_8888)
+                    val bm = createBitmap(98, 98)
                     bm.eraseColor(guessedColors[i * numCols + j])
                     Image(
                         bitmap = bm.asImageBitmap(),
@@ -139,10 +140,10 @@ fun DetectedKey(
 @Preview(showBackground = true)
 @Composable
 fun DetectedKeyPreview() {
-    val emptyBitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888)
+    val emptyBitmap = createBitmap(500, 500)
     emptyBitmap.eraseColor(android.graphics.Color.RED)
 
-    Project2Theme {
+    BglibTheme {
         DetectedKey(emptyBitmap, MutableList(25){android.graphics.Color.BLUE}, 5, 5)
     }
 }

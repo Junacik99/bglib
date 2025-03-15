@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bglib.ui.theme.Project2Theme
+import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.core.Rect
 
 class DetectedCardsActivity : ComponentActivity() {
@@ -47,7 +47,7 @@ class DetectedCardsActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            Project2Theme {
+            BglibTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     DetectedCards(rows, cols, cards)
                 }
@@ -91,7 +91,7 @@ fun DetectedCardsPreview() {
         Card(Rect(15, 0, 42, 100), "Card 4"),
     )
 
-    Project2Theme {
+    BglibTheme {
         DetectedCards(2, 2, cards)
     }
 }
