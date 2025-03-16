@@ -77,14 +77,14 @@ fun TimerScreen(timer: Timer = Timer()){
         Button(onClick = {
             if (isStarted) return@Button
             isStarted = true
-            timerTask = timer.start() {
+            timerTask = timer.start({
                 seconds = timer.getSeconds()
                 minutes = timer.getMinutes()
                 hours = timer.getHours()
                 if (timer.time <= 0){
                     mediaPlayer?.start()
                 }
-            }
+            })
         }){
             Text("Start", fontSize = 50.sp)
         }
