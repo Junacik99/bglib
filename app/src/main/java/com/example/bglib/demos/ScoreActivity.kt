@@ -33,7 +33,7 @@ import com.example.bglib.R
 import com.example.bglib.Team
 import com.example.bglib.ui.theme.BglibTheme
 
-var mediaPlayer: MediaPlayer? = null
+private var mediaPlayer: MediaPlayer? = null
 
 class ScoreActivity: ComponentActivity() {
 

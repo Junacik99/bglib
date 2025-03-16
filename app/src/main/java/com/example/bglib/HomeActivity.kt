@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
+import com.example.bglib.demos.TimerActivity
 import com.example.bglib.ui.theme.BglibTheme
 
 class HomeActivity : ComponentActivity() {
@@ -129,6 +130,12 @@ fun HomeScreen(){
                 context.startActivity(Intent(context, LivesActivity::class.java))
             }) {
             Text("Lives")
+        }
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, TimerActivity::class.java))
+            }) {
+            Text("Timer")
         }
         Button(
             onClick = {
