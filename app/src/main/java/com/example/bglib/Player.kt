@@ -8,6 +8,10 @@ open class Player (playerName: String = "") : Playable(playerName) {
     }
     override val id: Int = nextId.getAndIncrement()
 
+    open var lives: Int = 100
+
+    override var hasLost: () -> Boolean = { lives <= 0 }
+
     // Move count
     open var moveCount: Int = 0
     // Cards
