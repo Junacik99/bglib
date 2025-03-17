@@ -29,10 +29,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bglib.demos.AchievementsActivity
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
 import com.example.bglib.demos.TimerActivity
 import com.example.bglib.ui.theme.BglibTheme
+import kotlin.jvm.java
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,6 +138,12 @@ fun HomeScreen(){
                 context.startActivity(Intent(context, TimerActivity::class.java))
             }) {
             Text("Timer")
+        }
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, AchievementsActivity::class.java))
+            }) {
+            Text("Achievements")
         }
         Button(
             onClick = {

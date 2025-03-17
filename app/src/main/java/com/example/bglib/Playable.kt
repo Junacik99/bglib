@@ -10,6 +10,7 @@ open class Playable (val name: String) {
     open val id: Int = nextId.getAndIncrement()
 
     open var score: Int = 0
+    open var deltaScore: Int = 0
 
     // TODO: Override this function variable to check if the team has won
     // Example:
@@ -21,6 +22,7 @@ open class Playable (val name: String) {
 
 
     open fun updateScore(score: Int) {
+        this.deltaScore = score
         this.score += score
     }
 
