@@ -178,6 +178,8 @@ fun AchievementsScreen(player: Player, achievements: List<Achievement>) {
 
             Spacer(modifier = Modifier.padding(50.dp))
 
+            Text("Add score", fontSize = 26.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
+
             Button(onClick = {
                 // Add 10 score
                 player.updateScore(10)
@@ -186,7 +188,7 @@ fun AchievementsScreen(player: Player, achievements: List<Achievement>) {
             }, modifier = Modifier.padding(10.dp)){
                 Text("10", fontSize = 30.sp)
             }
-            Spacer(modifier = Modifier.padding(10.dp))
+
             Button(onClick = {
                 // Add 30 score
                 player.updateScore(30)
@@ -204,7 +206,7 @@ fun AchievementsScreen(player: Player, achievements: List<Achievement>) {
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Achievements", fontSize = 27.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
+            Text("Achievements", fontSize = 26.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
             Spacer(modifier = Modifier.padding(10.dp))
 
             for (achievement in achievements) {

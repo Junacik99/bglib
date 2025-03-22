@@ -113,10 +113,18 @@ fun PlayersBattle(player1: Player, player2: Player){
             verticalAlignment = Alignment.CenterVertically
         ){
             if (player1.hasLost()){
-                Text("Player ${player1.id} - ${player1.name} has lost!", fontSize = 30.sp, color = Color.Blue)
+                Text("Player ${player1.id} - ${player1.name} has lost!",
+                    fontSize = 30.sp,
+                    color = Color.Blue,
+                    modifier = Modifier.padding(10.dp)
+                )
             }
             else if (player2.hasLost()){
-                Text("Player ${player2.id} - ${player2.name} has lost!", fontSize = 30.sp, color = Color.Red)
+                Text("Player ${player2.id} - ${player2.name} has lost!",
+                    fontSize = 30.sp,
+                    color = Color.Red,
+                    modifier = Modifier.padding(10.dp)
+                )
             }
         }
 
