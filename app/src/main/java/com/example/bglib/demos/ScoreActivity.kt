@@ -104,7 +104,7 @@ fun TeamBattle(teamA: Team = Team("Team A"), teamB: Team = Team("Team B")) {
                             scoreA = teamA.score
 
                             if (teamA.isWinner()){
-                                winner = teamA.name
+                                winner = "Winner:\n\n${teamA.name}"
                             //     play sound
                                 mediaPlayer?.start()
                             }
@@ -135,7 +135,7 @@ fun TeamBattle(teamA: Team = Team("Team A"), teamB: Team = Team("Team B")) {
                             scoreB = teamB.score
 
                             if (winner == "" && teamB.isWinner()){
-                                winner = teamB.name
+                                winner = "Winner\n\n${teamB.name}"
                                 //     play sound
                                 mediaPlayer?.start()
                             }
