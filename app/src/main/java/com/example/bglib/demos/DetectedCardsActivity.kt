@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.demos
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bglib.classes.Card
+import com.example.bglib.classes.gridPos
 import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.core.Rect
 

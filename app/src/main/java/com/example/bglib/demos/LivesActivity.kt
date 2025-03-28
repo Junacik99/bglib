@@ -2,7 +2,7 @@ package com.example.bglib.demos
 
 import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
-import com.example.bglib.Player
+import com.example.bglib.classes.Player
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.ui.theme.BglibTheme
-import java.nio.file.WatchEvent
 
 
 class LivesActivity: ComponentActivity(){

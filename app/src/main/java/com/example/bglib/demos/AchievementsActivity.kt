@@ -33,8 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bglib.Achievement
-import com.example.bglib.Player
+import com.example.bglib.classes.Achievement
+import com.example.bglib.classes.Player
 import com.example.bglib.R
 import com.example.bglib.ui.theme.BglibTheme
 

@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.classes
 
 import java.util.concurrent.atomic.AtomicInteger
 

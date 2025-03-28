@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.demos.AchievementsActivity
+import com.example.bglib.demos.KeyDetectorActivity
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
 import com.example.bglib.demos.TimerActivity

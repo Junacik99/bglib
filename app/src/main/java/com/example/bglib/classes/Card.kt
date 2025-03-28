@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.classes
 
 import android.graphics.Point
 import android.os.Parcel

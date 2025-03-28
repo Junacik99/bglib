@@ -11,6 +11,7 @@ import com.example.bglib.CardDetection.Companion.getBoundingBoxes
 import com.example.bglib.ImageProcessing.Companion.cards2grid
 import com.example.bglib.TextDetection.Companion.detectTextMLKit
 import com.example.bglib.TextDetection.Companion.getRotationCompensation
+import com.example.bglib.demos.DetectedCardsActivity
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.CompletableDeferred

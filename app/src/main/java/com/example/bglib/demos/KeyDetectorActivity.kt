@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.demos
 
 import android.Manifest
 import android.content.Intent
@@ -10,12 +10,11 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.bglib.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.CardDetection.Companion.getBoundingBoxes
-import com.example.bglib.ImageProcessing.Companion.rotateImage
-import com.example.bglib.Utils.Companion.checkCamPermission
-import com.example.bglib.Utils.Companion.getRotationAngle
-import com.example.bglib.Utils.Companion.mat2bitmap
+import com.example.bglib.CardBaseActivity
+import com.example.bglib.CardDetection
+import com.example.bglib.ImageProcessing
+import com.example.bglib.R
+import com.example.bglib.Utils
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
@@ -28,9 +27,9 @@ class KeyDetectorActivity: CardBaseActivity() {
     private var keyIndicator: TextView? = null
     private var keyRotation: Double = 0.0
 
-    fun getCardKey(frame:Mat) : Mat? {
-        val rects = detectRectOtsu(frame, drawBoundingBoxes = true)
-        val boundingBoxes = getBoundingBoxes(frame, rects)
+    fun getCardKey(frame: Mat) : Mat? {
+        val rects = CardDetection.Companion.detectRectOtsu(frame, drawBoundingBoxes = true)
+        val boundingBoxes = CardDetection.Companion.getBoundingBoxes(frame, rects)
 
         // Whole card and the key
         if (boundingBoxes.size == 2){
@@ -40,7 +39,7 @@ class KeyDetectorActivity: CardBaseActivity() {
             val subframe = frame.submat(keyBB)
 
             // Get key rotation
-            keyRotation = getRotationAngle(key)
+            keyRotation = Utils.Companion.getRotationAngle(key)
 
             return subframe
         }
@@ -63,7 +62,7 @@ class KeyDetectorActivity: CardBaseActivity() {
             try {
                 // Convert last detected key to bitmap
                 val stream = ByteArrayOutputStream()
-                val frameBitmap = mat2bitmap(lastKey!!)
+                val frameBitmap = Utils.Companion.mat2bitmap(lastKey!!)
                 frameBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) // or JPEG, WebP
                 val byteArray = stream.toByteArray()
 
@@ -83,7 +82,7 @@ class KeyDetectorActivity: CardBaseActivity() {
         // init camera
         initCamera()
 
-        if (checkCamPermission(this)) {
+        if (Utils.Companion.checkCamPermission(this)) {
             Log.d(TAG, "Permissions granted")
             mOpenCvCameraView.setCameraPermissionGranted()
 
@@ -107,7 +106,7 @@ class KeyDetectorActivity: CardBaseActivity() {
         val key = getCardKey(frame) ?: return frame
 
         // Rotate the key
-        val rotatedKey = rotateImage(key, keyRotation)
+        val rotatedKey = ImageProcessing.Companion.rotateImage(key, keyRotation)
 
         // Log.d(TAG, "Key rotation: $keyRotation")
 

@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.classes
 
 import java.util.Timer
 import kotlin.concurrent.timer
@@ -31,7 +31,7 @@ open class Timer (var time: Int = 0){
         return time / 3600
     }
 
-    private var timerTask: java.util.Timer? = null
+    private var timerTask: Timer? = null
 
     // function: () -> Unit function to be called every second
     fun start(function: () -> Unit, period: Long = 1000): Timer? {

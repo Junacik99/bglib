@@ -10,6 +10,8 @@ import com.example.bglib.CardDetection.Companion.getBoundingBoxes
 import com.example.bglib.TextDetection.Companion.detectTextMLKit
 import com.example.bglib.TextDetection.Companion.getRotationCompensation
 import com.example.bglib.Utils.Companion.getLargestRect
+import com.example.bglib.classes.convertMLKitTextToParcelable
+import com.example.bglib.demos.DetectedTextBlockActivity
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions

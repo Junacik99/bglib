@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetectedCardsActivity"
+            android:name=".demos.DetectedCardsActivity"
             android:exported="false"
             android:label="@string/title_activity_detected_cards"
             android:theme="@style/Theme.Bglib" />
@@ -74,7 +74,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".KeyDetectorActivity"
+            android:name=".demos.KeyDetectorActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Bglib">
@@ -83,7 +83,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetectedKeyActivity"
+            android:name=".demos.DetectedKeyActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Bglib">
@@ -101,7 +101,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetectedTextBlockActivity"
+            android:name=".demos.DetectedTextBlockActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Bglib">

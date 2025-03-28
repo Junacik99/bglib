@@ -4,6 +4,7 @@ import android.graphics.Color
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import com.example.bglib.classes.Card
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Point

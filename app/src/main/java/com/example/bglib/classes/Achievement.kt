@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.classes
 
 // Achievement class designed as in the article from Juho Hamari and Veikko Eranti
 // Framework for Designing and Evaluating Game Achievements (2011)

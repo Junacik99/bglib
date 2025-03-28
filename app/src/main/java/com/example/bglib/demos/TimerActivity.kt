@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.R
-import com.example.bglib.Timer
+import com.example.bglib.classes.Timer
 import com.example.bglib.ui.theme.BglibTheme
 
 private var timerTask: java.util.Timer? = null

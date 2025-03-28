@@ -1,8 +1,9 @@
-package com.example.bglib
+package com.example.bglib.demos
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -41,10 +42,10 @@ class DetectedKeyActivity: ComponentActivity() {
         val mat : Mat = bitmap2mat(bitmap)
 
         val targetColors = listOf(
-            android.graphics.Color.rgb(0, 0, 255), // blue
-            android.graphics.Color.rgb(255, 0, 0), // red
-            android.graphics.Color.rgb(0, 0, 0), // black
-            android.graphics.Color.rgb(245, 214, 147)) // yellowish
+            Color.rgb(0, 0, 255), // blue
+            Color.rgb(255, 0, 0), // red
+            Color.rgb(0, 0, 0), // black
+            Color.rgb(245, 214, 147)) // yellowish
 
         // TODO: Crop the image to the key
         val rects = detectRectOtsu(mat, drawContours = true, drawBoundingBoxes = true)
@@ -141,9 +142,9 @@ fun DetectedKey(
 @Composable
 fun DetectedKeyPreview() {
     val emptyBitmap = createBitmap(500, 500)
-    emptyBitmap.eraseColor(android.graphics.Color.RED)
+    emptyBitmap.eraseColor(Color.RED)
 
     BglibTheme {
-        DetectedKey(emptyBitmap, MutableList(25){android.graphics.Color.BLUE}, 5, 5)
+        DetectedKey(emptyBitmap, MutableList(25){ Color.BLUE}, 5, 5)
     }
 }

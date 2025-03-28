@@ -28,9 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bglib.Player
+import com.example.bglib.classes.Player
 import com.example.bglib.R
-import com.example.bglib.Team
+import com.example.bglib.classes.Team
 import com.example.bglib.ui.theme.BglibTheme
 
 private var mediaPlayer: MediaPlayer? = null
