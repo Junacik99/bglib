@@ -71,4 +71,6 @@ dependencies {
     implementation(kotlin("script-runtime"))
     implementation(libs.kotlin.script.runtime)
     implementation(libs.opencv)
+    implementation(libs.tasks.vision)
+
 }
