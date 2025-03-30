@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -30,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.demos.AchievementsActivity
+import com.example.bglib.demos.HandDetectionActivity
 import com.example.bglib.demos.KeyDetectorActivity
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
@@ -99,59 +101,91 @@ fun HomeScreen(){
         Spacer(modifier = Modifier.padding(50.dp))
 
         // Buttons
-        Button(
-            onClick = {
-                val intent = Intent(context, ExampleActivity::class.java)
-                intent.putExtra("rows", rows)
-                intent.putExtra("cols", cols)
-                intent.putExtra("cardDetectMethod", cardDetectMethod)
-                intent.putExtra("ocrMethod", ocrMethod)
-                context.startActivity(intent)
-            }) {
-            Text("Card Detection")
+        LazyColumn {
+            item {
+                Button(
+                    onClick = {
+                        val intent = Intent(context, ExampleActivity::class.java)
+                        intent.putExtra("rows", rows)
+                        intent.putExtra("cols", cols)
+                        intent.putExtra("cardDetectMethod", cardDetectMethod)
+                        intent.putExtra("ocrMethod", ocrMethod)
+                        context.startActivity(intent)
+                    }) {
+                    Text("Card Detection")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, CardSavingActivity::class.java))
+                    }) {
+                    Text("Dataset builder")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, KeyDetectorActivity::class.java))
+                    }) {
+                    Text("Key Detection")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, HandDetectionActivity::class.java))
+                    }) {
+                    Text("Hand Landmarks")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, ScoreActivity::class.java))
+                    }) {
+                    Text("Score")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, LivesActivity::class.java))
+                    }) {
+                    Text("Lives")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, TimerActivity::class.java))
+                    }) {
+                    Text("Timer")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, AchievementsActivity::class.java))
+                    }) {
+                    Text("Achievements")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, TestActivity::class.java))
+                    }) {
+                    Text("Test")
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.padding(25.dp))
+            }
         }
-        Button(
-                onClick = {
-                    context.startActivity(Intent(context, CardSavingActivity::class.java))
-                }) {
-            Text("Dataset builder")
-        }
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, KeyDetectorActivity::class.java))
-            }) {
-            Text("Key Detection")
-        }
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, ScoreActivity::class.java))
-            }) {
-            Text("Score")
-        }
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, LivesActivity::class.java))
-            }) {
-            Text("Lives")
-        }
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, TimerActivity::class.java))
-            }) {
-            Text("Timer")
-        }
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, AchievementsActivity::class.java))
-            }) {
-            Text("Achievements")
-        }
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, TestActivity::class.java))
-            }) {
-            Text("Test")
-        }
+
+
     }
 
 }

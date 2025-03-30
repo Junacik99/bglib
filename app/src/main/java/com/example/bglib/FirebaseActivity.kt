@@ -53,7 +53,7 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
         // Get the device's current rotation relative to its "native" orientation.
         // Then, from the ORIENTATIONS table, look up the angle the image must be
         // rotated to compensate for the device's rotation.
-        val deviceRotation = activity.windowManager.defaultDisplay.rotation
+        val deviceRotation = activity.display.rotation
         var rotationCompensation = ORIENTATIONS.get(deviceRotation)
 
         // Get the device's sensor orientation.

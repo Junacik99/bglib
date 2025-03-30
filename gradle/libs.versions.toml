@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.0"
+cameraCore = "1.2.2"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -16,9 +17,19 @@ playServicesMlkitTextRecognitionCommon = "19.1.0"
 playServicesMlkitTextRecognition = "19.0.1"
 tasksVision = "latest.release"
 tessTwo = "9.1.0"
+constraintlayout = "2.2.1"
 
 [libraries]
+androidx-camera-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version = "1.5.0-alpha06" }
+androidx-camera-core = { module = "androidx.camera:camera-core" }
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle" }
+androidx-camera-view = { module = "androidx.camera:camera-view" }
+androidx-camera-video = { module = "androidx.camera:camera-video" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+camera-camera2 = { module = "androidx.camera:camera-camera2" }
+camera-core = { module = "androidx.camera:camera-core" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -40,6 +51,7 @@ play-services-mlkit-text-recognition-common = { group = "com.google.android.gms"
 play-services-mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
 tasks-vision = { module = "com.google.mediapipe:tasks-vision", version.ref = "tasksVision" }
 tess-two = { module = "com.rmtheis:tess-two", version.ref = "tessTwo" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
