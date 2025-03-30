@@ -1,5 +1,7 @@
 package com.example.bglib.demos
 
+// A simple demo that shows how to obtain and visualize hand landmarks
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.PointF
@@ -32,10 +34,10 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-val TAG = "HandDetection"
-
 
 class HandDetectionActivity : ComponentActivity() {
+    val TAG = "HandDetection"
+
     var handLandmarkerHelper: HandLandmarkerHelper? = null
     lateinit var cameraExecutor: ExecutorService
 

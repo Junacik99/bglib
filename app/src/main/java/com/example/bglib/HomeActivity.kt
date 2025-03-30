@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.demos.AchievementsActivity
+import com.example.bglib.demos.DiceRollActivity
 import com.example.bglib.demos.HandDetectionActivity
 import com.example.bglib.demos.KeyDetectorActivity
 import com.example.bglib.demos.LivesActivity
@@ -129,6 +130,14 @@ fun HomeScreen(){
                         context.startActivity(Intent(context, KeyDetectorActivity::class.java))
                     }) {
                     Text("Key Detection")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, DiceRollActivity::class.java))
+                    }) {
+                    Text("Dice Roll")
                 }
             }
             item {
