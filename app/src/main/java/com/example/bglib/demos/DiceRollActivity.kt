@@ -17,15 +17,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,8 +58,10 @@ class DiceRollActivity : ComponentActivity() {
     private var landmarks by mutableStateOf<List<PointF>>(emptyList())
 
     // Init dices
+    private val d4 = Dice(4)
     private val d6 = Dice(6)
     private val d10 = Dice(10)
+    private val d12 = Dice(12)
     private val d20 = Dice(20)
 
     var currentDice by mutableStateOf(d6)
@@ -70,6 +73,7 @@ class DiceRollActivity : ComponentActivity() {
     private var result : Int? = null
     var resultText by mutableStateOf("Throw dice")
     private var diceThrown : Boolean = false
+    private var multiplier by mutableIntStateOf(1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,7 +147,10 @@ class DiceRollActivity : ComponentActivity() {
 
                 if (!diceThrown && distance > 0.2f) {
                     diceThrown = true
-                    result = currentDice.roll()
+                    result = 0
+                    for (i in 1..multiplier) {
+                        result = result?.plus(currentDice.roll())
+                    }
                     resultText = "Result: $result"
                 }
 
@@ -180,6 +187,7 @@ class DiceRollActivity : ComponentActivity() {
                     .build()
             }
         }
+        var menuExpanded by remember { mutableStateOf(false) }
 
         Column (modifier = Modifier
             .fillMaxSize()
@@ -222,24 +230,54 @@ class DiceRollActivity : ComponentActivity() {
                 Column (horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(resultText, fontSize = 25.sp, modifier = Modifier.align(Alignment.CenterHorizontally).padding(5.dp))
 
-                    Text("Current dice: ${currentDice.name}", fontSize = 20.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text("Current dice: $multiplier${currentDice.name}", fontSize = 20.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
 
                     Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().padding(5.dp)) {
-                        Button(onClick = { currentDice = d6 }, modifier = Modifier.padding(5.dp)) {
-                            Text("d6", fontSize = 20.sp)
+                        Button(onClick = { if (multiplier > 1) multiplier-- }, modifier = Modifier.padding(5.dp)) {
+                            Text("-1d", fontSize = 15.sp)
                         }
-                        Button(onClick = { currentDice = d10 }, modifier = Modifier.padding(5.dp)) {
-                            Text("d10", fontSize = 20.sp)
+                        Button(onClick = { multiplier++ }, modifier = Modifier.padding(5.dp)) {
+                            Text("+1d", fontSize = 15.sp)
                         }
-                        Button(onClick = { currentDice = d20 }, modifier = Modifier.padding(5.dp)) {
-                            Text("d20", fontSize = 20.sp)
+
+                        Box {
+                            Button(onClick = { menuExpanded = !menuExpanded }, modifier = Modifier.padding(5.dp)) {
+                                Text("Dice", fontSize = 15.sp)
+                            }
+                            DropdownMenu(
+                                expanded = menuExpanded,
+                                onDismissRequest = { menuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("d4") },
+                                    onClick = { currentDice = d4; menuExpanded = false }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("d6") },
+                                    onClick = { currentDice = d6; menuExpanded = false }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("d10") },
+                                    onClick = { currentDice = d10; menuExpanded = false }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("d12") },
+                                    onClick = { currentDice = d12; menuExpanded = false }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("d20") },
+                                    onClick = { currentDice = d20; menuExpanded = false }
+                                )
+
+                            }
                         }
+
                         Button(onClick = {
                             resultText = "Throw dice"
                             diceThrown = false
                             result = null
                                          }, modifier = Modifier.padding(5.dp)) {
-                            Text("reset", fontSize = 20.sp)
+                            Text("Reset", fontSize = 15.sp)
                         }
                     }
                 }
