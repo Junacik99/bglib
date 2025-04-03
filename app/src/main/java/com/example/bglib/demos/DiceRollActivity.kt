@@ -35,12 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.bglib.CameraPreview
 import com.example.bglib.classes.Dice
+import com.example.bglib.classes.Player
 import com.example.bglib.ui.theme.BglibTheme
 import com.google.mediapipe.examples.handlandmarker.HandLandmarkerHelper
 import com.google.mediapipe.tasks.vision.core.RunningMode
@@ -74,6 +76,9 @@ class DiceRollActivity : ComponentActivity() {
     var resultText by mutableStateOf("Throw dice")
     private var diceThrown : Boolean = false
     private var multiplier by mutableIntStateOf(1)
+
+    private val player : Player = Player("Kaicho")
+    private var score by mutableIntStateOf(player.score)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +136,7 @@ class DiceRollActivity : ComponentActivity() {
                 landmarks = newLandmarks
 
                 // Calculate hand center
+                // TODO: landmarks[9] can be used instead to avoid additional computation
                 var sumX = 0f
                 var sumY = 0f
                 landmarks.forEach { landmark ->
@@ -152,6 +158,11 @@ class DiceRollActivity : ComponentActivity() {
                         result = result?.plus(currentDice.roll())
                     }
                     resultText = "Result: $result"
+
+                    // Update score
+                    player.score += result!!
+                    score = player.score
+                    player.deltaScore = result!!
                 }
 
                 lastCenter = handCenter
@@ -192,8 +203,18 @@ class DiceRollActivity : ComponentActivity() {
         Column (modifier = Modifier
             .fillMaxSize()
         ){
+            // Player info row
+            Row (modifier = Modifier.weight(0.1f).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Column (horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(player.name, fontSize = 25.sp, modifier = Modifier.padding(5.dp))
+
+                    Text("Score: $score", fontSize = 20.sp, modifier = Modifier.padding(5.dp))
+                }
+            }
+
+            // Camera view
             Box(modifier = Modifier
-                .weight(0.85f)
+                .weight(0.75f)
             ) {
                 // Show camera
                 CameraPreview(controller, modifier = Modifier.fillMaxSize())
@@ -226,6 +247,7 @@ class DiceRollActivity : ComponentActivity() {
                 }
             }
 
+            // Control row
             Row (modifier = Modifier.weight(0.15f)){
                 Column (horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(resultText, fontSize = 25.sp, modifier = Modifier.align(Alignment.CenterHorizontally).padding(5.dp))
@@ -286,5 +308,6 @@ class DiceRollActivity : ComponentActivity() {
 
 
     }
+
 
 }
