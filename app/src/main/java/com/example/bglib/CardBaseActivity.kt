@@ -26,7 +26,7 @@ import org.opencv.core.Mat
 open class CardBaseActivity
     : CameraActivity(), CvCameraViewListener2 {
 
-    protected val TAG = "OCVSample::Activity"
+    private val TAG = "CardBase::Activity"
     protected lateinit var mOpenCvCameraView: CameraBridgeViewBase
     protected val CAMERA_ID = "0"
     protected val coroutineScope = MainScope()

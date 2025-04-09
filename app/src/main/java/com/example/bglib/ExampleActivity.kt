@@ -27,6 +27,7 @@ import org.opencv.core.Rect
 
 class ExampleActivity : CardBaseActivity() {
     val context = this
+    val TAG = "Example::Activity"
 
     // Get parameters from HomeActivity
     private val cardDetectMethod: String by lazy { intent.extras?.getString("cardDetectMethod", "") ?: "" }

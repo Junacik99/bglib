@@ -21,6 +21,7 @@ import org.opencv.core.Mat
 import java.io.ByteArrayOutputStream
 
 class KeyDetectorActivity: CardBaseActivity() {
+    val TAG = "KeyDetector::Activity"
 
     private var button: Button? = null
     private var lastKey: Mat? = null

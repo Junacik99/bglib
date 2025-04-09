@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import com.example.bglib.demos.AchievementsActivity
 import com.example.bglib.demos.DiceRollActivity
 import com.example.bglib.demos.HandDetectionActivity
+import com.example.bglib.demos.HelpActivity
+import com.example.bglib.demos.KMeansActivity
 import com.example.bglib.demos.KeyDetectorActivity
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
@@ -130,6 +132,23 @@ fun HomeScreen(){
                         context.startActivity(Intent(context, KeyDetectorActivity::class.java))
                     }) {
                     Text("Key Detection")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, HelpActivity::class.java))
+                    }
+                ) {
+                    Text("Help")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, KMeansActivity::class.java))
+                    }) {
+                    Text("KMeans Segmentation")
                 }
             }
             item {

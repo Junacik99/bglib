@@ -1,7 +1,9 @@
 package com.example.bglib
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.core.graphics.blue
+import androidx.core.graphics.get
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import com.example.bglib.classes.Card
@@ -12,6 +14,9 @@ import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 import kotlin.math.abs
+import kotlin.math.sqrt
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
 class ImageProcessing {
     companion object{
@@ -225,5 +230,117 @@ class ImageProcessing {
 
             return destination
         }
+
+        // Feature data class with 5 attributes - RGB and x, y coordinates
+        data class Feature(val r: Int, val g: Int, val b: Int, val x: Int, val y: Int)
+
+        // Euclidean distance between two features
+        fun euclidean_feature(f1: Feature, f2: Feature): Double {
+            val dx = f1.x - f2.x.toDouble()
+            val dy = f1.y - f2.y
+            val dr = f1.r - f2.r
+            val dg = f1.g - f2.g
+            val db = f1.b - f2.b
+
+            return sqrt(dx * dx + dy * dy + dr * dr + dg * dg + db * db)
+        }
+
+        // Data class for kmeans segmented image
+        data class KMeansSegmented(val img: Bitmap, val labels: List<Feature>)
+
+        // Image segmentation based on five features
+        // RGB values and x, y coordinates
+        fun segment_kmeans(img: Bitmap, k: Int, maxIters: Int = 100): KMeansSegmented {
+
+            val width = img.width
+            val height = img.height
+
+            val centroids = MutableList(k) {
+                val x = (0 until width).random()
+                val y = (0 until height).random()
+                val pixel = img[x, y]
+                Feature(pixel.red, pixel.green, pixel.blue, x, y)
+            }
+
+            val labels = IntArray(width * height)
+            val dst = createBitmap(width, height, img.config!!)
+
+            var changes = 0
+            var iterations = 0
+            do {
+                iterations++
+                changes = 0
+
+                // Assign features to centroids
+                for (x in 0 until width) {
+                    for (y in 0 until height) {
+                        val pixel = img[x, y]
+                        val feature = Feature(pixel.red, pixel.green, pixel.blue, x, y)
+
+                        val distances = centroids.map { euclidean_feature(feature, it) }
+                        val label = distances.indexOf(distances.min())
+
+                        val oldLabel = labels[y * width + x]
+                        if (oldLabel != label) {
+                            changes++
+                        }
+
+                        labels[y * width + x] = label
+                    }
+                }
+
+                // Compute new centroids
+                val newCentroids = MutableList(k) { Feature(0, 0, 0, 0, 0) } // Initialize with default values
+                val counts = IntArray(k) { 0 }
+
+                for (x in 0 until width) {
+                    for (y in 0 until height) {
+                        val label = labels[y * width + x]
+                        val pixel = img[x, y]
+                        val feature = Feature(pixel.red, pixel.green, pixel.blue, x, y)
+
+                        newCentroids[label] = newCentroids[label].copy(
+                            r = newCentroids[label].r + feature.r,
+                            g = newCentroids[label].g + feature.g,
+                            b = newCentroids[label].b + feature.b,
+                            x = newCentroids[label].x + feature.x,
+                            y = newCentroids[label].y + feature.y
+                        )
+
+                        counts[label]++
+                    }
+                }
+
+                // Divide to get the average values for new centroids
+                for (i in 0 until k) {
+                    if (counts[i] > 0) {
+                        newCentroids[i] = newCentroids[i].copy(
+                            r = newCentroids[i].r / counts[i],
+                            g = newCentroids[i].g / counts[i],
+                            b = newCentroids[i].b / counts[i],
+                            x = newCentroids[i].x / counts[i],
+                            y = newCentroids[i].y / counts[i]
+                        )
+                    }
+                }
+
+                // Update centroids with new values
+                for(i in 0 until k){
+                    centroids[i] = newCentroids[i]
+                }
+            } while (changes > 0 && iterations < maxIters)
+
+            // Assign the cluster center color to each pixel
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    val label = labels[y * width + x]
+                    val centroid = centroids[label]
+                    dst[x, y] = Color.rgb(centroid.r, centroid.g, centroid.b)
+                }
+            }
+
+            return KMeansSegmented(dst, centroids)
+        }
+
     }
 }

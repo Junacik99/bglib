@@ -26,6 +26,7 @@ import org.opencv.core.Mat
 class TestActivity : CardBaseActivity()  {
 
     val context = this
+    val TAG = "Test::Activity"
 
     protected lateinit var button: Button
     protected lateinit var lastText: Text
