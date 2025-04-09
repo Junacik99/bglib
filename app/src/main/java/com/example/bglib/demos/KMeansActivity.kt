@@ -13,12 +13,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +76,8 @@ class KMeansActivity : ComponentActivity() {
         var bitmap by remember { mutableStateOf<Bitmap?>(null) }
         var segmentedBitmap by remember { mutableStateOf<Bitmap?>(null) }
         var isLoading by remember { mutableStateOf(false) }
+        var segmentSize by remember { mutableStateOf(256) }
+        var segmentCount by remember { mutableStateOf(6) }
 
         val galleryLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -97,8 +102,11 @@ class KMeansActivity : ComponentActivity() {
         LaunchedEffect(key1 = bitmap) {
             if (bitmap != null) {
                 segmentationScope.launch {
-                    val resizedBitmap = bitmap!!.scale(512, 512)
-                    val (finalBitmap, _) = segment_kmeans(resizedBitmap, 6)
+                    val origWidth = bitmap!!.width
+                    val origHeight = bitmap!!.height
+                    val resizedBitmap = bitmap!!.scale(segmentSize, segmentSize)
+                    val (segmentedResult, _) = segment_kmeans(resizedBitmap, segmentCount)
+                    val finalBitmap = segmentedResult.scale(origWidth, origHeight)
                     withContext(Dispatchers.Main) {
                         segmentedBitmap = finalBitmap
                         isLoading = false
@@ -120,6 +128,28 @@ class KMeansActivity : ComponentActivity() {
                 galleryLauncher.launch(galleryIntent)
             }) {
                 Text(text = "Open Gallery")
+            }
+            Row (
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(text = "K = $segmentCount")
+                Slider(
+                    value = segmentCount.toFloat(),
+                    onValueChange = { newValue ->
+                        segmentCount = newValue.toInt()
+                    },
+                    valueRange = 2f..32f,)
+            }
+            Row (
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(text = "Segment Size = $segmentSize")
+                Slider(
+                    value = segmentSize.toFloat(),
+                    onValueChange = { newValue ->
+                        segmentSize = newValue.toInt()
+                    },
+                    valueRange = 32f..1024f,)
             }
             Box(modifier = Modifier.fillMaxSize()) {
                 if (isLoading) {
