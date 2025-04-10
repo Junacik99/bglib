@@ -34,7 +34,7 @@ import com.example.bglib.demos.AchievementsActivity
 import com.example.bglib.demos.DiceRollActivity
 import com.example.bglib.demos.HandDetectionActivity
 import com.example.bglib.demos.HelpActivity
-import com.example.bglib.demos.KMeansActivity
+import com.example.bglib.demos.ImageSegmentationActivity
 import com.example.bglib.demos.KeyDetectorActivity
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
@@ -146,9 +146,9 @@ fun HomeScreen(){
             item {
                 Button(
                     onClick = {
-                        context.startActivity(Intent(context, KMeansActivity::class.java))
+                        context.startActivity(Intent(context, ImageSegmentationActivity::class.java))
                     }) {
-                    Text("KMeans Segmentation")
+                    Text("Image Segmentation")
                 }
             }
             item {

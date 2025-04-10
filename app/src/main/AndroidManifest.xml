@@ -173,7 +173,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".demos.KMeansActivity"
+            android:name=".demos.ImageSegmentationActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Bglib">

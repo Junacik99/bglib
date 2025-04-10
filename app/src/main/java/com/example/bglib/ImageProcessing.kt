@@ -17,7 +17,9 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
-import kotlin.times
+import kotlin.math.exp
+import kotlin.math.pow
+
 
 class ImageProcessing {
     companion object{
@@ -232,6 +234,8 @@ class ImageProcessing {
             return destination
         }
 
+        /* SEGMENTATION */
+
         // Feature data class with 5 attributes - RGB and x, y coordinates
         data class Feature(val r: Int, val g: Int, val b: Int, val x: Int, val y: Int){
             fun normalized_euclidean_distance(f2: Feature, maxColor: Int, maxX: Int, maxY: Int): Double {
@@ -262,16 +266,17 @@ class ImageProcessing {
             }
         }
 
-        // Data class for kmeans segmented image
-        data class KMeansSegmented(val img: Bitmap, val labels: List<Feature>)
+        // Data class for segmented image
+        data class SegmentedImage(val img: Bitmap, val labels: List<Feature>)
 
-        // Image segmentation based on five features
+        // K-Means image segmentation based on five features
         // RGB values and x, y coordinates
-        fun segment_kmeans(img: Bitmap, k: Int, maxIters: Int = 100): KMeansSegmented {
+        fun segment_kmeans(img: Bitmap, k: Int, maxIters: Int = 100): SegmentedImage {
 
             val width = img.width
             val height = img.height
 
+            // Init centroids
             val centroids = MutableList(k) {
                 val x = (0 until width).random()
                 val y = (0 until height).random()
@@ -282,6 +287,7 @@ class ImageProcessing {
             val labels = IntArray(width * height)
             val dst = createBitmap(width, height, img.config!!)
 
+            // Repeat until convergence or max iterations
             var changes = 0
             var iterations = 0
             do {
@@ -356,8 +362,131 @@ class ImageProcessing {
                 }
             }
 
-            return KMeansSegmented(dst, centroids)
+            return SegmentedImage(dst, centroids)
         }
 
+        /// Functions for selecting the right window size
+        // Scott's Rule:
+        //  n - number of points (pixels)
+        //  d - number of dimensions
+        fun scottsRule(n: Int, d: Int): Int{
+            return n.toDouble().pow(-1.0 / (d + 4)).toInt()
+        }
+
+        // Silverman's Rule
+        fun silvermansRule(n: Int, d: Int): Int{
+            val v1 = 4.0 / (d + 2)
+            val v2 = n.toDouble().pow(-1.0 / (d + 4))
+            return (v1.pow(1.0 / (d + 4)) * v2).toInt()
+        }
+
+        // Compute gaussian kernel of the window
+        fun gaussianKernel(distance: Double, bandwidth: Double): Double {
+            return exp(-(distance.pow(2)) / (2 * bandwidth.pow(2)))
+        }
+
+        // Mean Shift image segmentation
+        fun segment_meanshift(
+            img: Bitmap,
+            colorBandwidth: Double = 30.0,
+            spatialBandwidth: Int = 21,
+            threshold: Double = 0.001,
+            maxIters: Int = 100,
+        ): SegmentedImage {
+            val width = img.width
+            val height = img.height
+
+            // Init means with pixel values
+            val means = MutableList(width * height) { index ->
+                val x = index % width
+                val y = index / width
+                val pixel = img[x, y]
+                Feature(pixel.red, pixel.green, pixel.blue, x, y)
+            }
+
+            val resultBitmap = createBitmap(width, height, img.config!!)
+
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    val idx = y * width + x
+                    var mean = means[idx]
+
+                    var iterations = 0
+                    var hasShifted: Boolean
+                    do {
+                        iterations++
+                        hasShifted = false
+
+                        var totalWeight = 0.0
+                        var weightedSumR = 0
+                        var weightedSumG = 0
+                        var weightedSumB = 0
+                        var weightedSumX = 0
+                        var weightedSumY = 0
+
+                        // Window around the mean
+                        val windowMinX = maxOf(0, mean.x - spatialBandwidth)
+                        val windowMaxX = minOf(width - 1, mean.x + spatialBandwidth)
+                        val windowMinY = maxOf(0, mean.y - spatialBandwidth)
+                        val windowMaxY = minOf(height - 1, mean.y + spatialBandwidth)
+
+                        for (winY in windowMinY..windowMaxY) {
+                            for (winX in windowMinX..windowMaxX) {
+                                val pixel = img[winX, winY]
+                                val currentFeature = Feature(pixel.red, pixel.green, pixel.blue, winX, winY)
+
+                                // Split the distance in two components: spatial and color
+                                val spatialDistance = sqrt(
+                                    ((winX - mean.x).toDouble().pow(2) + (winY - mean.y).toDouble().pow(2))
+                                )
+                                val colorDistance = sqrt(
+                                    (mean.r - currentFeature.r).toDouble()
+                                        .pow(2) + (mean.g - currentFeature.g).toDouble()
+                                        .pow(2) + (mean.b - currentFeature.b).toDouble().pow(2)
+                                )
+
+                                // Compute weights
+                                val spatialWeight =
+                                    gaussianKernel(spatialDistance, spatialBandwidth.toDouble())
+                                val colorWeight = gaussianKernel(colorDistance, colorBandwidth)
+                                val finalWeight = spatialWeight * colorWeight
+
+                                totalWeight += finalWeight
+                                weightedSumR += (currentFeature.r * finalWeight).toInt()
+                                weightedSumG += (currentFeature.g * finalWeight).toInt()
+                                weightedSumB += (currentFeature.b * finalWeight).toInt()
+                                weightedSumX += (currentFeature.x * finalWeight).toInt()
+                                weightedSumY += (currentFeature.y * finalWeight).toInt()
+                            }
+                        }
+
+                        // New mean
+                        val newMean = if (totalWeight > 0) {
+                            Feature(
+                                (weightedSumR / totalWeight).toInt(),
+                                (weightedSumG / totalWeight).toInt(),
+                                (weightedSumB / totalWeight).toInt(),
+                                (weightedSumX / totalWeight).toInt(),
+                                (weightedSumY / totalWeight).toInt()
+                            )
+                        } else {
+                            mean
+                        }
+
+
+                        // Has mean shifted
+                        if (mean.euclidean_distance(newMean) > threshold) {
+                            hasShifted = true
+                        }
+                        mean = newMean
+                    } while (hasShifted && iterations < maxIters)
+                    means[idx] = mean
+                    resultBitmap[x, y] = Color.rgb(mean.r, mean.g, mean.b)
+                }
+            }
+
+
+            return SegmentedImage(resultBitmap, means)
+        }
     }
 }
