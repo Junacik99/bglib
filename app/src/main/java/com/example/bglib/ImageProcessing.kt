@@ -17,6 +17,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
+import kotlin.times
 
 class ImageProcessing {
     companion object{
@@ -232,17 +233,33 @@ class ImageProcessing {
         }
 
         // Feature data class with 5 attributes - RGB and x, y coordinates
-        data class Feature(val r: Int, val g: Int, val b: Int, val x: Int, val y: Int)
+        data class Feature(val r: Int, val g: Int, val b: Int, val x: Int, val y: Int){
+            fun normalized_euclidean_distance(f2: Feature, maxColor: Int, maxX: Int, maxY: Int): Double {
+                val nr = r.toDouble() / maxColor
+                val ng = g.toDouble() / maxColor
+                val nb = b.toDouble() / maxColor
+                val nx = x.toDouble() / maxX
+                val ny = y.toDouble() / maxY
 
-        // Euclidean distance between two features
-        fun euclidean_feature(f1: Feature, f2: Feature): Double {
-            val dx = f1.x - f2.x.toDouble()
-            val dy = f1.y - f2.y
-            val dr = f1.r - f2.r
-            val dg = f1.g - f2.g
-            val db = f1.b - f2.b
+                val dx = nx - f2.x.toDouble()
+                val dy = ny - f2.y
+                val dr = nr - f2.r
+                val dg = ng - f2.g
+                val db = nb - f2.b
 
-            return sqrt(dx * dx + dy * dy + dr * dr + dg * dg + db * db)
+                return sqrt(dx * dx + dy * dy + dr * dr + dg * dg + db * db)
+            }
+
+            // Euclidean distance between two features
+            fun euclidean_distance(f2: Feature): Double{
+                val dx = x - f2.x.toDouble()
+                val dy = y - f2.y
+                val dr = r - f2.r
+                val dg = g - f2.g
+                val db = b - f2.b
+
+                return sqrt(dx * dx + dy * dy + dr * dr + dg * dg + db * db)
+            }
         }
 
         // Data class for kmeans segmented image
@@ -277,7 +294,7 @@ class ImageProcessing {
                         val pixel = img[x, y]
                         val feature = Feature(pixel.red, pixel.green, pixel.blue, x, y)
 
-                        val distances = centroids.map { euclidean_feature(feature, it) }
+                        val distances = centroids.map { it.euclidean_distance(feature) }
                         val label = distances.indexOf(distances.min())
 
                         val oldLabel = labels[y * width + x]
