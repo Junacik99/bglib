@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,12 +51,29 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import androidx.core.graphics.scale
 import com.example.bglib.ImageProcessing.Companion.segment_meanshift
+import com.google.mediapipe.examples.imagesegmenter.ImageSegmenterHelper
+import com.google.mediapipe.framework.image.BitmapImageBuilder
+import com.google.mediapipe.framework.image.ByteBufferExtractor
+import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter
+import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter.ImageSegmenterOptions
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
+import java.nio.ByteBuffer
 
 
 class ImageSegmentationActivity : ComponentActivity() {
     val TAG = "KMeans::Activity"
     private lateinit var segmentationExecutor: ExecutorService
     private lateinit var segmentationScope: CoroutineScope
+
+    // private val mediapipeHelper = ImageSegmenterHelper(
+    //     context = applicationContext,
+    //     currentDelegate = ImageSegmenterHelper.DELEGATE_CPU,
+    //     currentModel = ImageSegmenterHelper.MODEL_DEEPLABV3,
+    //     runningMode = RunningMode.IMAGE
+    // )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +101,7 @@ class ImageSegmentationActivity : ComponentActivity() {
         var menuExpanded by remember { mutableStateOf(false) }
 
         var segmentAlg by remember { mutableStateOf("kmeans") }
+        var maxIterations by remember { mutableIntStateOf(100) }
 
         var segmentSize by remember { mutableStateOf(256) }
         var segmentCount by remember { mutableStateOf(6) }
@@ -136,10 +156,63 @@ class ImageSegmentationActivity : ComponentActivity() {
 
                             val (segmentedResult, _) = segment_meanshift(
                                 resizedBitmap,
+                                maxIters = maxIterations,
                                 spatialBandwidth = spacialBandwith,
                                 colorBandwidth = colorBandwith,
                                 threshold = 0.1)
                             val finalBitmap = segmentedResult.scale(origWidth, origHeight)
+
+                            withContext(Dispatchers.Main) {
+                                segmentedBitmap = finalBitmap
+                                isLoading = false
+                            }
+                        }
+                    }
+                    "deeplab" -> {
+                        // mediapipe deeplabv3 segmentation
+                        segmentationScope.launch {
+                            // Create the segmenter object from options
+                            // set running mode, output type and model path
+                            val options =
+                            ImageSegmenterOptions.builder()
+                                .setBaseOptions(
+                                    BaseOptions.builder().setModelAssetPath("deeplab_v3.tflite").build())
+                                .setRunningMode(RunningMode.IMAGE)
+                                .setOutputCategoryMask(true)
+                                .setOutputConfidenceMasks(false)
+                                .build()
+                            val imagesegmenter = ImageSegmenter.createFromOptions(context, options)
+
+                            // Convert input bitmap to MPImage
+                            val mpImage = BitmapImageBuilder(bitmap!!).build()
+
+                            // Image Segmentation
+                            val segmenterResult = imagesegmenter.segment(mpImage)
+
+                            // Obtain category mask (MPImage)
+                            val categoryMask = segmenterResult.categoryMask().get()
+
+                            // Obtain results
+                            val finishTimeMs = SystemClock.uptimeMillis()
+                            val inferenceTime = finishTimeMs - segmenterResult.timestampMs()
+                            val bundle = ImageSegmenterHelper.ResultBundle(
+                                ByteBufferExtractor.extract(categoryMask),
+                                mpImage.width,
+                                mpImage.height,
+                                inferenceTime
+                            )
+
+                            // Get mask as byte buffer
+                            val mask = bundle.results
+                            mask.rewind()
+
+                            // Create final bitmap
+                            // Assign colors to each pixel based on the category
+                            val finalBitmap = createBitmap(mpImage.width, mpImage.height, Bitmap.Config.ARGB_8888)
+                            for (i in 0 until finalBitmap.width * finalBitmap.height) {
+                                val color = ImageSegmenterHelper.labelColors[mask[i].toInt()]
+                                finalBitmap[i % finalBitmap.width, i / finalBitmap.width] = color
+                            }
 
                             withContext(Dispatchers.Main) {
                                 segmentedBitmap = finalBitmap
@@ -187,6 +260,10 @@ class ImageSegmentationActivity : ComponentActivity() {
                             text = { Text("mean shift") },
                             onClick = { segmentAlg = "meanshift"; menuExpanded = false }
                         )
+                        DropdownMenuItem(
+                            text = { Text("DeeplabV3") },
+                            onClick = { segmentAlg = "deeplab"; menuExpanded = false }
+                        )
                     }
                 }
 
@@ -203,7 +280,8 @@ class ImageSegmentationActivity : ComponentActivity() {
                             onValueChange = { newValue ->
                                 segmentCount = newValue.toInt()
                             },
-                            valueRange = 2f..32f,)
+                            valueRange = 2f..32f,
+                        )
                     }
                     Row (
                         horizontalArrangement = Arrangement.Center,
@@ -214,7 +292,8 @@ class ImageSegmentationActivity : ComponentActivity() {
                             onValueChange = { newValue ->
                                 segmentSize = newValue.toInt()
                             },
-                            valueRange = 32f..1024f,)
+                            valueRange = 32f..1024f,
+                        )
                     }
                 }
 
@@ -229,7 +308,8 @@ class ImageSegmentationActivity : ComponentActivity() {
                             onValueChange = { newValue ->
                                 spacialBandwith = newValue.toInt()
                             },
-                            valueRange = 2f..32f,)
+                            valueRange = 2f..32f,
+                        )
                     }
                     Row (
                         horizontalArrangement = Arrangement.Center,
@@ -240,7 +320,8 @@ class ImageSegmentationActivity : ComponentActivity() {
                             onValueChange = { newValue ->
                                 colorBandwith = newValue.toInt().toDouble()
                             },
-                            valueRange = 2f..64f,)
+                            valueRange = 2f..64f,
+                        )
                     }
                     Row (
                         horizontalArrangement = Arrangement.Center,
@@ -251,8 +332,26 @@ class ImageSegmentationActivity : ComponentActivity() {
                             onValueChange = { newValue ->
                                 segmentSize = newValue.toInt()
                             },
-                            valueRange = 32f..1024f,)
+                            valueRange = 32f..1024f,
+                        )
                     }
+                    Row (
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(text = "Max iterations = $maxIterations")
+                        Slider(
+                            value = maxIterations.toFloat(),
+                            onValueChange = { newValue ->
+                                maxIterations = newValue.toInt()
+                            },
+                            valueRange = 10f..100f,
+                        )
+                    }
+                }
+
+                "deeplab" -> {
+                    // deeplab controls
+
                 }
             }
 
