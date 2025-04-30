@@ -1,7 +1,9 @@
 package com.example.bglib
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.os.SystemClock
 import androidx.core.graphics.blue
 import androidx.core.graphics.get
 import androidx.core.graphics.green
@@ -17,7 +19,16 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
+import com.google.mediapipe.examples.imagesegmenter.ImageSegmenterHelper
+import com.google.mediapipe.framework.image.BitmapImageBuilder
+import com.google.mediapipe.framework.image.ByteBufferExtractor
+import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter
+import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter.ImageSegmenterOptions
 import kotlin.math.exp
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 
 
@@ -487,6 +498,76 @@ class ImageProcessing {
 
 
             return SegmentedImage(resultBitmap, means)
+        }
+
+        // Image segmentation using deeplabV3 and mediapipe
+        fun segment_deeplab(img: Bitmap, context: Context): ByteArray {
+            // Create the segmenter object from options
+            // set running mode, output type and model path
+            val options =
+                ImageSegmenterOptions.builder()
+                    .setBaseOptions(
+                        BaseOptions.builder().setModelAssetPath("deeplab_v3.tflite").build())
+                    .setRunningMode(RunningMode.IMAGE)
+                    .setOutputCategoryMask(true)
+                    .setOutputConfidenceMasks(false)
+                    .build()
+            val imageSegmenter = ImageSegmenter.createFromOptions(context, options)
+
+            // Convert input bitmap to MPImage
+            val mpImage = BitmapImageBuilder(img).build()
+            val width = mpImage.width
+            val height = mpImage.height
+
+            // Image Segmentation
+            val segmenterResult = imageSegmenter.segment(mpImage)
+
+            // Obtain category mask (MPImage)
+            val categoryMask = segmenterResult.categoryMask().get()
+
+            // Obtain results
+            val finishTimeMs = SystemClock.uptimeMillis()
+            val inferenceTime = finishTimeMs - segmenterResult.timestampMs()
+            val bundle = ImageSegmenterHelper.ResultBundle(
+                ByteBufferExtractor.extract(categoryMask),
+                width,
+                height,
+                inferenceTime
+            )
+
+            // Get mask as byte buffer
+            val mask = bundle.results
+            mask.rewind()
+
+            // Print distinct category masks
+            val maskArray = ByteArray(mask.capacity())
+            mask.get(maskArray)
+
+            return maskArray
+        }
+
+        // Data class for bounding boxes of objects
+        data class BoundingBox(val category: Byte, val xMin: Int, val yMin: Int, val xMax: Int, val yMax: Int)
+
+        fun createBoundingBox(category: Byte, img: ByteArray, width: Int, height: Int) : BoundingBox{
+            var minX = width
+            var minY = height
+            var maxX = -1
+            var maxY = -1
+
+            for (i in img.indices){
+                if (img[i] != category) continue
+
+                val x = i % width
+                val y = i / width
+
+                minX = min(minX, x)
+                minY = min(minY, y)
+                maxX = max(maxX, x)
+                maxY = max(maxY, y)
+            }
+
+            return BoundingBox(category, minX, minY, maxX, maxY)
         }
     }
 }

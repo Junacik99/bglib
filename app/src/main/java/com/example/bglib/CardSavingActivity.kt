@@ -31,7 +31,7 @@ class CardSavingActivity : CameraActivity(), CvCameraViewListener2 {
     protected val TAG = "OCVSample::Activity"
 
     private var subframes = mutableListOf<Mat>()
-    private val frameSize = 128 // Change this according to the input layer size of your model
+    private val frameSize = 512 // Change this according to the input layer size of your model
 
     @SuppressLint("NewApi")
     protected fun buttonPressed() {

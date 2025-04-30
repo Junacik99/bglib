@@ -81,4 +81,7 @@ dependencies {
 
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
+
+    implementation(libs.androidx.fragment.v186)
+    implementation(libs.fragment.ktx)
 }

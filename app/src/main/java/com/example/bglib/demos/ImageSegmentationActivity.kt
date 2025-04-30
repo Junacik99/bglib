@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.SystemClock
@@ -60,11 +61,15 @@ import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter
 import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter.ImageSegmenterOptions
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
-import java.nio.ByteBuffer
+import com.example.bglib.ImageProcessing.Companion.BoundingBox
+import com.example.bglib.ImageProcessing.Companion.createBoundingBox
+import com.example.bglib.ImageProcessing.Companion.segment_deeplab
+import kotlin.math.max
+import kotlin.math.min
 
 
 class ImageSegmentationActivity : ComponentActivity() {
-    val TAG = "KMeans::Activity"
+    val TAG = "Segmentation::Activity"
     private lateinit var segmentationExecutor: ExecutorService
     private lateinit var segmentationScope: CoroutineScope
 
@@ -171,47 +176,40 @@ class ImageSegmentationActivity : ComponentActivity() {
                     "deeplab" -> {
                         // mediapipe deeplabv3 segmentation
                         segmentationScope.launch {
-                            // Create the segmenter object from options
-                            // set running mode, output type and model path
-                            val options =
-                            ImageSegmenterOptions.builder()
-                                .setBaseOptions(
-                                    BaseOptions.builder().setModelAssetPath("deeplab_v3.tflite").build())
-                                .setRunningMode(RunningMode.IMAGE)
-                                .setOutputCategoryMask(true)
-                                .setOutputConfidenceMasks(false)
-                                .build()
-                            val imagesegmenter = ImageSegmenter.createFromOptions(context, options)
+                            val width = bitmap!!.width
+                            val height = bitmap!!.height
+                            val maskArray = segment_deeplab(bitmap!!, context)
 
-                            // Convert input bitmap to MPImage
-                            val mpImage = BitmapImageBuilder(bitmap!!).build()
+                            val distinctCategories = maskArray.distinct()
+                            Log.d(TAG, "Distinct categories: $distinctCategories")
 
-                            // Image Segmentation
-                            val segmenterResult = imagesegmenter.segment(mpImage)
+                            // Get bounding boxes
+                            val boundingBoxes = mutableListOf<BoundingBox>()
+                            for (category in distinctCategories) {
+                                if (category.toInt() == 0) continue
 
-                            // Obtain category mask (MPImage)
-                            val categoryMask = segmenterResult.categoryMask().get()
-
-                            // Obtain results
-                            val finishTimeMs = SystemClock.uptimeMillis()
-                            val inferenceTime = finishTimeMs - segmenterResult.timestampMs()
-                            val bundle = ImageSegmenterHelper.ResultBundle(
-                                ByteBufferExtractor.extract(categoryMask),
-                                mpImage.width,
-                                mpImage.height,
-                                inferenceTime
-                            )
-
-                            // Get mask as byte buffer
-                            val mask = bundle.results
-                            mask.rewind()
+                                val boundingBox = createBoundingBox(category, maskArray, width, height)
+                                boundingBoxes.add(boundingBox)
+                            }
 
                             // Create final bitmap
                             // Assign colors to each pixel based on the category
-                            val finalBitmap = createBitmap(mpImage.width, mpImage.height, Bitmap.Config.ARGB_8888)
-                            for (i in 0 until finalBitmap.width * finalBitmap.height) {
-                                val color = ImageSegmenterHelper.labelColors[mask[i].toInt()]
-                                finalBitmap[i % finalBitmap.width, i / finalBitmap.width] = color
+                            val finalBitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                            for (i in 0 until width * height) {
+                                var color = ImageSegmenterHelper.labelColors[maskArray[i].toInt()]
+
+                                val x = i % width
+                                val y = i / width
+                                for (box in boundingBoxes) {
+                                    if ((x >= box.xMin && x <= box.xMax && (y == box.yMin || y == box.yMax)) ||
+                                        (y>= box.yMin && y <= box.yMax && (x == box.xMin || x == box.xMax))
+                                        ){
+                                        color = Color.RED
+                                        break
+                                    }
+                                }
+
+                                finalBitmap[x, y] = color
                             }
 
                             withContext(Dispatchers.Main) {
