@@ -35,6 +35,9 @@ import com.example.bglib.ui.theme.BglibTheme
 
 private var mediaPlayer: MediaPlayer? = null
 
+/*************************************************
+ * Demo activity of the match between two teams. *
+ ************************************************/
 class ScoreActivity: ComponentActivity() {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

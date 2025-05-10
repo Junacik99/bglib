@@ -2,6 +2,10 @@ package com.example.bglib.classes
 
 import java.util.concurrent.atomic.AtomicInteger
 
+/************************************************
+ * A base class for playable objects            *
+ * (teams, players, etc.)                       *
+ ***********************************************/
 open class Playable (val name: String) {
     // A unique identifier for the instances of this class
     companion object {

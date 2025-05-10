@@ -14,7 +14,13 @@ import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-
+/************************************************
+ * This file contains classes and functions     *
+ * for the card detection.                      *
+ * Contains:                                    *
+ * Model Interpreter                            *
+ * Detecting Rectangles                         *
+ ***********************************************/
 
 /*****************************************************************************************/
 /* Model Interpreter */
@@ -51,7 +57,7 @@ class ModelInterpreter(context: Context, modelName: String, inputSize: Int = 128
     }
 
     fun preprocessMat(mat: Mat): FloatArray {
-        // Resize the Mat to the model's expected input size
+        // Resize the Mat to the model's expected input Dimensions
         val resizedMat = Mat()
         Imgproc.resize(mat, resizedMat, Size(mInputSize.toDouble(), mInputSize.toDouble()))
 

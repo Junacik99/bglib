@@ -28,8 +28,13 @@ import com.example.bglib.classes.RectParcelable
 import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.core.Rect
 
+/************************************************
+ * Show parcelable text blocks                  *
+ * sent to this activity.                       *
+ ***********************************************/
 class DetectedTextBlockActivity : ComponentActivity() {
 
+    val TAG = "DetectedTextBlock::Activity"
     lateinit var textBlocks: List<ParcelableTextBlock>
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -37,16 +42,16 @@ class DetectedTextBlockActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("OCVSample::Activity", "NEW ACTIVITY")
+        Log.d(TAG, "NEW ACTIVITY")
 
         val parcelable : ParcelableText? = intent.getParcelableExtra("cardText", ParcelableText::class.java)
 
         if (parcelable != null) {
-            Log.d("OCVSample::Activity", parcelable.text)
+            Log.d(TAG, parcelable.text)
             textBlocks = parcelable.textBlocks
         }
         else
-            Log.e("OCVSample::Activity", "Parcelable is null")
+            Log.e(TAG, "Parcelable is null")
 
 
 

@@ -32,7 +32,9 @@ import com.example.bglib.ui.theme.BglibTheme
 private var timerTask: java.util.Timer? = null
 private var mediaPlayer: MediaPlayer? = null
 
-
+/************************************************
+ * An activity for a timer.                     *
+ ***********************************************/
 class TimerActivity : ComponentActivity(){
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {

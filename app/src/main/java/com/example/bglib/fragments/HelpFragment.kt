@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 
+// Default help content
 @Composable
 fun DefaultHelp(){
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
@@ -41,6 +42,9 @@ fun DefaultHelp(){
     }
 }
 
+/************************************************
+ * A fragment for displaying over CameraX       *
+ ***********************************************/
 class HelpFragment (val helpContent: @Composable () -> Unit = { DefaultHelp() }) : Fragment() {
 
     override fun onCreateView(

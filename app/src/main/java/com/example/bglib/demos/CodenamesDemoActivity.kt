@@ -26,6 +26,13 @@ import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint2f
 import org.opencv.core.Rect
 
+/************************************************
+ * Demo activity for binary classification      *
+ * of cards.                                    *
+ * Showcases the use of model interpreter,      *
+ * as well as rectangle detection,              *
+ * ocr, card parcelable and grid alignment.     *
+ ***********************************************/
 class CodenamesDemoActivity : CardBaseActivity() {
     val context = this
     val TAG = "Example::Activity"
@@ -48,7 +55,7 @@ class CodenamesDemoActivity : CardBaseActivity() {
 
     private fun logRectsInfo(rects: List<Rect>, frame: Mat) {
         Log.d(TAG, "Number of rectangles: ${rects.size}")
-        Log.d(TAG, "Screen size: ${frame.size().width}x${frame.size().height}")
+        Log.d(TAG, "Screen Dimensions: ${frame.size().width}x${frame.size().height}")
         for (rect in rects) {
             Log.d(TAG, "x: ${rect.x}, y: ${rect.y}, width: ${rect.width}, height: ${rect.height}")
         }
@@ -141,7 +148,7 @@ class CodenamesDemoActivity : CardBaseActivity() {
                 Log.d(TAG, "Texts: $gridTexts")
 
                 for (card in grid){
-                    Log.d(TAG, "Card: ${card.text} pos: ${card.gridPos}")
+                    Log.d(TAG, "Card: ${card.text} pos: ${card.GridPosition}")
                 }
 
                 withContext(Dispatchers.Main) {

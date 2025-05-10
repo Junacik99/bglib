@@ -5,10 +5,53 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.mlkit.vision.text.Text
 import org.opencv.core.Rect
-import kotlin.collections.filterNotNull
 import kotlin.collections.toTypedArray
 
-data class screenPos(var x: Int, var y: Int) : Parcelable {
+/************************************************
+ * A parcelable class of a Card                 *
+ ***********************************************/
+data class Card(public var boundingBox: Rect, public var text: String = "") : Parcelable {
+    public var ScreenPosition: ScreenPosition = ScreenPosition(boundingBox.x, boundingBox.y)    // Screen position
+    public var Dimensions: Dimensions = Dimensions(boundingBox.width, boundingBox.height)                         // Axis-aligned Dimensions
+    public var GridPosition: GridPosition = GridPosition(0, 0)                                                 // Position in the grid
+
+    constructor(parcel: Parcel) : this(
+        Rect(parcel.readInt(), parcel.readInt(), parcel.readInt(), parcel.readInt()),
+        parcel.readString() ?: ""
+    ) {
+        ScreenPosition = parcel.readParcelable(ScreenPosition::class.java.classLoader)!!
+        Dimensions = parcel.readParcelable(Dimensions::class.java.classLoader)!!
+        GridPosition = parcel.readParcelable(GridPosition::class.java.classLoader)!!
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(boundingBox.x)
+        parcel.writeInt(boundingBox.y)
+        parcel.writeInt(boundingBox.width)
+        parcel.writeInt(boundingBox.height)
+        parcel.writeString(text)
+        parcel.writeParcelable(ScreenPosition, flags)
+        parcel.writeParcelable(Dimensions, flags)
+        parcel.writeParcelable(GridPosition, flags)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Card> {
+        override fun createFromParcel(parcel: Parcel): Card {
+            return Card(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Card?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+// Parcelable ScreenPosition
+data class ScreenPosition(var x: Int, var y: Int) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt()
@@ -23,18 +66,19 @@ data class screenPos(var x: Int, var y: Int) : Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<screenPos> {
-        override fun createFromParcel(parcel: Parcel): screenPos {
-            return screenPos(parcel)
+    companion object CREATOR : Parcelable.Creator<ScreenPosition> {
+        override fun createFromParcel(parcel: Parcel): ScreenPosition {
+            return ScreenPosition(parcel)
         }
 
-        override fun newArray(size: Int): Array<screenPos?> {
+        override fun newArray(size: Int): Array<ScreenPosition?> {
             return arrayOfNulls(size)
         }
     }
 }
 
-data class size(var width: Int, var height: Int) : Parcelable {
+// Parcelable Dimensions
+data class Dimensions(var width: Int, var height: Int) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt()
@@ -49,18 +93,19 @@ data class size(var width: Int, var height: Int) : Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<size> {
-        override fun createFromParcel(parcel: Parcel): size {
-            return size(parcel)
+    companion object CREATOR : Parcelable.Creator<Dimensions> {
+        override fun createFromParcel(parcel: Parcel): Dimensions {
+            return Dimensions(parcel)
         }
 
-        override fun newArray(size: Int): Array<size?> {
+        override fun newArray(size: Int): Array<Dimensions?> {
             return arrayOfNulls(size)
         }
     }
 }
 
-data class gridPos(var row: Int, var col: Int) : Parcelable {
+// Parcelable GridPosition
+data class GridPosition(var row: Int, var col: Int) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt()
@@ -75,17 +120,18 @@ data class gridPos(var row: Int, var col: Int) : Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<gridPos> {
-        override fun createFromParcel(parcel: Parcel): gridPos {
-            return gridPos(parcel)
+    companion object CREATOR : Parcelable.Creator<GridPosition> {
+        override fun createFromParcel(parcel: Parcel): GridPosition {
+            return GridPosition(parcel)
         }
 
-        override fun newArray(size: Int): Array<gridPos?> {
+        override fun newArray(size: Int): Array<GridPosition?> {
             return arrayOfNulls(size)
         }
     }
 }
 
+// Parcelable opencv.core.Rect
 data class RectParcelable(val rect: Rect) :Parcelable{
     constructor(parcel: Parcel) : this (
         Rect(parcel.readInt(), parcel.readInt(), parcel.readInt(), parcel.readInt())
@@ -118,6 +164,7 @@ data class RectParcelable(val rect: Rect) :Parcelable{
 
 /////// PARCELABLE TEXT ///////
 
+// Parcelable TextElement
 data class ParcelableTextElement(
     val text: String,
     val boundingBox: RectParcelable?,
@@ -171,8 +218,29 @@ data class ParcelableTextElement(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ParcelableTextElement
+
+        if (text != other.text) return false
+        if (boundingBox != other.boundingBox) return false
+        if (!cornerPoints.contentDeepEquals(other.cornerPoints)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = text.hashCode()
+        result = 31 * result + (boundingBox?.hashCode() ?: 0)
+        result = 31 * result + (cornerPoints?.contentDeepHashCode() ?: 0)
+        return result
+    }
 }
 
+// Parcelable TextLine
 data class ParcelableTextLine(
     val text: String,
     val boundingBox: RectParcelable?,
@@ -209,8 +277,31 @@ data class ParcelableTextLine(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ParcelableTextLine
+
+        if (text != other.text) return false
+        if (boundingBox != other.boundingBox) return false
+        if (!cornerPoints.contentDeepEquals(other.cornerPoints)) return false
+        if (elements != other.elements) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = text.hashCode()
+        result = 31 * result + (boundingBox?.hashCode() ?: 0)
+        result = 31 * result + (cornerPoints?.contentDeepHashCode() ?: 0)
+        result = 31 * result + elements.hashCode()
+        return result
+    }
 }
 
+// Parcelable TextBlock
 data class ParcelableTextBlock(
     val text: String,
     val boundingBox: RectParcelable?,
@@ -247,8 +338,31 @@ data class ParcelableTextBlock(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ParcelableTextBlock
+
+        if (text != other.text) return false
+        if (boundingBox != other.boundingBox) return false
+        if (!cornerPoints.contentDeepEquals(other.cornerPoints)) return false
+        if (lines != other.lines) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = text.hashCode()
+        result = 31 * result + (boundingBox?.hashCode() ?: 0)
+        result = 31 * result + (cornerPoints?.contentDeepHashCode() ?: 0)
+        result = 31 * result + lines.hashCode()
+        return result
+    }
 }
 
+// Parcelable Text
 data class ParcelableText(
     val text: String,
     val textBlocks: List<ParcelableTextBlock>
@@ -281,11 +395,13 @@ data class ParcelableText(
     }
 }
 
+// Convert MLKitText to ParcelableText
 fun convertMLKitTextToParcelable(mlKitText: Text): ParcelableText {
     val parcelableTextBlocks = mlKitText.textBlocks.map { convertTextBlock(it) }
     return ParcelableText(mlKitText.text, parcelableTextBlocks)
 }
 
+// Convert TextBlock to ParcelableTextBlock
 fun convertTextBlock(textBlock: Text.TextBlock): ParcelableTextBlock {
     val parcelableLines = textBlock.lines.map { convertTextLine(it) }
     return ParcelableTextBlock(
@@ -296,6 +412,7 @@ fun convertTextBlock(textBlock: Text.TextBlock): ParcelableTextBlock {
     )
 }
 
+// Convert TextLine to ParcelableTextLine
 fun convertTextLine(textLine: Text.Line): ParcelableTextLine {
     val parcelableElements = textLine.elements.map { convertTextElement(it) }
     return ParcelableTextLine(
@@ -306,6 +423,7 @@ fun convertTextLine(textLine: Text.Line): ParcelableTextLine {
     )
 }
 
+// Convert TextElement to ParcelableTextElement
 fun convertTextElement(textElement: Text.Element): ParcelableTextElement {
     return ParcelableTextElement(
         textElement.text,
@@ -313,6 +431,8 @@ fun convertTextElement(textElement: Text.Element): ParcelableTextElement {
         convertPointArrayToIntArray(textElement.cornerPoints)
     )
 }
+
+// Convert android.graphics.Rect to org.opencv.core.Rect
 fun androidRectToOpenCVRect(androidRect: android.graphics.Rect?): Rect? {
     return if (androidRect != null) {
         Rect(androidRect.left, androidRect.top, androidRect.width(), androidRect.height())
@@ -321,6 +441,7 @@ fun androidRectToOpenCVRect(androidRect: android.graphics.Rect?): Rect? {
     }
 }
 
+// Convert org.opencv.core.Rect to android.graphics.Rect
 fun openCVRectToAndroidRect(openCVRect: Rect?): android.graphics.Rect? {
     return if (openCVRect != null) {
         android.graphics.Rect(openCVRect.x, openCVRect.y, openCVRect.x + openCVRect.width, openCVRect.y + openCVRect.height)
@@ -328,52 +449,14 @@ fun openCVRectToAndroidRect(openCVRect: Rect?): android.graphics.Rect? {
         null
     }
 }
+
+// Convert Array<Point?> to Array<IntArray>
 fun convertPointArrayToIntArray(points: Array<Point?>?): Array<IntArray>? {
-    return points?.map { point ->
+    return points?.mapNotNull { point ->
         if (point != null) {
             intArrayOf(point.x.toInt(), point.y.toInt())
         } else {
             null // Handle null points if needed
         }
-    }?.filterNotNull()?.toTypedArray()
-}
-
-data class Card(public var boundingBox: Rect, public var text: String = "") : Parcelable {
-    public var screenPos: screenPos = screenPos(boundingBox.x, boundingBox.y)
-    public var size: size = size(boundingBox.width, boundingBox.height)
-    public var gridPos: gridPos = gridPos(0, 0)
-
-    constructor(parcel: Parcel) : this(
-        Rect(parcel.readInt(), parcel.readInt(), parcel.readInt(), parcel.readInt()),
-        parcel.readString() ?: ""
-    ) {
-        screenPos = parcel.readParcelable(screenPos::class.java.classLoader)!!
-        size = parcel.readParcelable(size::class.java.classLoader)!!
-        gridPos = parcel.readParcelable(gridPos::class.java.classLoader)!!
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(boundingBox.x)
-        parcel.writeInt(boundingBox.y)
-        parcel.writeInt(boundingBox.width)
-        parcel.writeInt(boundingBox.height)
-        parcel.writeString(text)
-        parcel.writeParcelable(screenPos, flags)
-        parcel.writeParcelable(size, flags)
-        parcel.writeParcelable(gridPos, flags)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Card> {
-        override fun createFromParcel(parcel: Parcel): Card {
-            return Card(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Card?> {
-            return arrayOfNulls(size)
-        }
-    }
+    }?.toTypedArray()
 }

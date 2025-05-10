@@ -1,7 +1,12 @@
 package com.example.bglib.classes
 
-// Achievement class designed as in the article from Juho Hamari and Veikko Eranti
-// Framework for Designing and Evaluating Game Achievements (2011)
+/************************************************
+ * Achievement class designed                   *
+ * as in the article from                       *
+ * Juho Hamari and Veikko Eranti:               *
+ * Framework for Designing and Evaluating       *
+ * Game-Based Applications (2011)               *
+ ***********************************************/
 class Achievement (
     val name: String,                                       // Name of the achievement
     val description: String = "",                           // Description of the achievement
@@ -42,6 +47,7 @@ class Achievement (
         return checkRequirements() && checkConditions() && trigger()
     }
 
+    // Unlock the achievent
     fun unlock() {
         unlocked = true
         image = imageUnlocked
@@ -53,6 +59,7 @@ class Achievement (
         image = imageLocked
     }
 
+    // Check all conditions and requirements of the achievement
     fun check(){
         if (unlocked) return
         if (checkTrigger()) {

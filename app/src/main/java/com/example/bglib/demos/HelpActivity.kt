@@ -30,6 +30,10 @@ import com.example.bglib.ui.theme.BglibTheme
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/************************************************
+ * Demo activity that shows how to use the      *
+ * help fragment.                               *
+ ***********************************************/
 class HelpActivity : AppCompatActivity() {
     val TAG = "Help::Activity"
 

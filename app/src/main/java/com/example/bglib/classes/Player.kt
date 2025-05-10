@@ -2,6 +2,10 @@ package com.example.bglib.classes
 
 import java.util.concurrent.atomic.AtomicInteger
 
+/************************************************
+ * A class for a player.                        *
+ * Each player has a unique identifier.         *
+ ***********************************************/
 open class Player (playerName: String = "") : Playable(playerName) {
     companion object {
         val nextId = AtomicInteger(1)

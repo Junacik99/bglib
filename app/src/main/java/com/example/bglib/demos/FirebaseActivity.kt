@@ -29,7 +29,10 @@ import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
 import androidx.core.content.ContextCompat as ContextCompat1
 
-
+/************************************************
+ * This activity showcases the use of the       *
+ * Google ML Kit Text Recognition.              *
+ ***********************************************/
 class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
 
     private val TAG = "OCVSample::Activity"

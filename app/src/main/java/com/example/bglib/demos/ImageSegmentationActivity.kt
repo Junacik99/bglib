@@ -58,7 +58,11 @@ import com.example.bglib.imgproc.BoundingBox
 import com.example.bglib.imgproc.createBoundingBox
 import com.example.bglib.imgproc.segment_deeplab
 
-
+/************************************************
+ * Demo activity that showcases the use of      *
+ * different image segmentation algorithms.     *
+ * K-means, mean shift, and deeplabv3.          *
+ ***********************************************/
 class ImageSegmentationActivity : ComponentActivity() {
     val TAG = "Segmentation::Activity"
     private lateinit var segmentationExecutor: ExecutorService

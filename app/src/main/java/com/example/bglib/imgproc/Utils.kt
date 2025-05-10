@@ -22,6 +22,19 @@ import org.opencv.imgproc.Imgproc
 import java.io.File
 import kotlin.math.atan2
 
+/************************************************
+ * Utility functions:                           *
+ * 1. Camera permission                         *
+ * 2. Save image to MediaStore                  *
+ * 3. Convert Mat to Bitmap (and vice versa)    *
+ * 4. Save frame(s)                             *
+ * 5. Resize frames                             *
+ * 6. Calculate rotation angle                  *
+ * 7. Convert MatOfPoint2f to Mat               *
+ * 8. Multiply Point by Mat                     *
+ * 9. Get largest rectangle                     *
+ ***********************************************/
+
 // Check if camera permission is granted
 fun checkCamPermission(context: Context): Boolean {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -157,7 +170,7 @@ fun matOfPoint2ftoMat(matOfPoint2f: MatOfPoint2f): Mat {
     // Determine the number of points
     val numPoints = points.size
 
-    // Create a Mat with the appropriate size and type
+    // Create a Mat with the appropriate Dimensions and type
     val mat = Mat(numPoints, 1, CvType.CV_32FC2)
 
     // Iterate through the points and populate the Mat

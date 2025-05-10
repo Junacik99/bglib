@@ -22,6 +22,9 @@ import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
 import java.io.ByteArrayOutputStream
 
+/************************************************
+ * Detect a key from the game codenames.        *
+ ***********************************************/
 class KeyDetectorActivity: CardBaseActivity() {
     val TAG = "KeyDetector::Activity"
 

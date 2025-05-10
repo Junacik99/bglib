@@ -22,6 +22,12 @@ import java.io.OutputStream
 import kotlin.coroutines.suspendCoroutine
 
 
+/************************************************
+ * OCR methods:                                 *
+ * 1. Tesseract                                 *
+ * 2. Firebase ML Kit                           *
+ ***********************************************/
+
 /* OCR */
 /* Firebase */
 

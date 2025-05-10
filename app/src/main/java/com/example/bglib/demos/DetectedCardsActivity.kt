@@ -22,10 +22,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.classes.Card
-import com.example.bglib.classes.gridPos
+import com.example.bglib.classes.GridPosition
 import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.core.Rect
 
+/************************************************
+ * An activity to show detected cards           *
+ * from CodenamesDemoActivity.                  *
+ ***********************************************/
 class DetectedCardsActivity : ComponentActivity() {
     private var numberOfCards = 0
 
@@ -73,7 +77,7 @@ fun DetectedCards(numberOfRows: Int, numberOfCols: Int, cards: List<Card>){
         for (i in 0 until numberOfRows) {
             Row {
                 for (j in 0 until numberOfCols) {
-                    val card = cards.firstOrNull { it.gridPos == gridPos(i, j) }
+                    val card = cards.firstOrNull { it.GridPosition == GridPosition(i, j) }
                     Text(card!!.text, modifier = Modifier.padding(10.dp))
                 }
             }

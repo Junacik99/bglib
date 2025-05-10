@@ -34,6 +34,10 @@ import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.core.Mat
 import androidx.core.graphics.createBitmap
 
+/************************************************
+ * Shows a detected key                         *
+ * from KeyDetectorActivity.                    *
+ ***********************************************/
 class DetectedKeyActivity: ComponentActivity() {
 
     var globalBitmap: Bitmap? = null

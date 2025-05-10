@@ -51,6 +51,9 @@ import org.opencv.core.Mat
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/************************************************
+ * Demo activity for Bang card recognition.     *
+ ***********************************************/
 class BangDemo : AppCompatActivity() {
     val TAG = "Bang::Activity"
 

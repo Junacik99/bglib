@@ -31,7 +31,7 @@ open class DatasetBuilderActivity
     protected val TAG = "DatasetBuilder::Activity"
 
     private var subframes = mutableListOf<Mat>()
-    private val frameSize = 512 // Change this according to the input layer size of your model
+    private val frameSize = 512 // Change this according to the input layer Dimensions of your model
 
     @SuppressLint("NewApi")
     protected fun buttonPressed() {

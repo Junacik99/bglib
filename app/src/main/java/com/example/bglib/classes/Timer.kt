@@ -3,6 +3,10 @@ package com.example.bglib.classes
 import java.util.Timer
 import kotlin.concurrent.timer
 
+/************************************************
+ * Timer.                                       *
+ * Has options: seconds, minutes, hours         *
+ ***********************************************/
 open class Timer (var time: Int = 0){
 
     private var _hasStarted : Boolean = false

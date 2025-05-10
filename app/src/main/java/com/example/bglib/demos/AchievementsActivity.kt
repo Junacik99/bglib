@@ -38,8 +38,15 @@ import com.example.bglib.classes.Player
 import com.example.bglib.R
 import com.example.bglib.ui.theme.BglibTheme
 
+// global variable room
 var room = "Bedroom"
 
+/************************************************
+ * Activity to showcase the use of              *
+ * Achievements                                 *
+ * Player can obtain 2 achievements             *
+ * based on the score and conditions            *
+ ***********************************************/
 class AchievementsActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

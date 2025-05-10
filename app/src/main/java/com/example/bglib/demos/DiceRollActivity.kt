@@ -48,7 +48,10 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.sqrt
 
-
+/************************************************
+ * Demo activity to show hand detection.        *
+ * Roll a virtual dice on hand movement.        *
+ ***********************************************/
 class DiceRollActivity : ComponentActivity() {
     val TAG = "DiceRoll::Activity"
 

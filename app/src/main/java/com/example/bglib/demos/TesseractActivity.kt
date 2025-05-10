@@ -29,7 +29,10 @@ import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
 import androidx.core.content.ContextCompat as ContextCompat1
 
-
+/************************************************
+ * OCR demo activity.                           *
+ * Using Tesseract models.                      *
+ ***********************************************/
 class TesseractActivity : CameraActivity(), CvCameraViewListener2 {
 
     private val TAG = "Tesseract::Activity"

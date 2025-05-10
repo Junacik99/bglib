@@ -29,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.ui.theme.BglibTheme
 
-
+/************************************************
+ * Demo activity of two players battle.         *
+ ***********************************************/
 class LivesActivity: ComponentActivity(){
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

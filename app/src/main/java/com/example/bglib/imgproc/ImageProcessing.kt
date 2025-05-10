@@ -31,7 +31,15 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-
+/************************************************
+ * This file contains classes and functions     *
+ * for the image processing.                    *
+ * Contains:                                    *
+ * Blurring filters                             *
+ * Image segmentation                           *
+ * Color manipulation                           *
+ * Image transformations                        *
+ ***********************************************/
 
 data class Pixel(val red: UByte, val green: UByte, val blue: UByte)
 data class Vector2i(val x: Int, val y: Int)
@@ -148,8 +156,8 @@ fun cards2grid(cards: List<Rect>, numRows: Int, numCols: Int): List<Card> {
         for (col in 0 until cardsInRow.size) {
             val gridPos = Vector2i(row, col)
             val newCard = Card(cardsInRow[col], "")
-            newCard.gridPos.col = col
-            newCard.gridPos.row = row
+            newCard.GridPosition.col = col
+            newCard.GridPosition.row = row
             grid.add(newCard)
         }
     }
@@ -164,7 +172,7 @@ fun rotateImage(source: Mat, degrees: Double): Mat {
     // Create the rotation matrix
     val rotationMatrix = Imgproc.getRotationMatrix2D(center, degrees, 1.0)
 
-    // Calculate the new size of the rotated image
+    // Calculate the new Dimensions of the rotated image
     val cos = abs(rotationMatrix.get(0, 0)[0])
     val sin = abs(rotationMatrix.get(0, 1)[0])
     val newWidth = (sourceSize.height * sin) + (sourceSize.width * cos)
@@ -315,7 +323,7 @@ fun segment_kmeans(img: Bitmap, k: Int, maxIters: Int = 100): SegmentedImage {
     return SegmentedImage(dst, centroids)
 }
 
-/// Functions for selecting the right window size
+/// Functions for selecting the right window Dimensions
 // Scott's Rule:
 //  n - number of points (pixels)
 //  d - number of dimensions
