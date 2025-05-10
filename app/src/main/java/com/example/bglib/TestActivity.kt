@@ -5,11 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.imgproc.CardDetection.Companion.getBoundingBoxes
-import com.example.bglib.imgproc.TextDetection.Companion.detectTextMLKit
-import com.example.bglib.imgproc.TextDetection.Companion.getRotationCompensation
-import com.example.bglib.imgproc.Utils.Companion.getLargestRect
+import com.example.bglib.imgproc.detectRectOtsu
+import com.example.bglib.imgproc.getBoundingBoxes
+import com.example.bglib.imgproc.detectTextMLKit
+import com.example.bglib.imgproc.getRotationCompensation
+import com.example.bglib.imgproc.getLargestRect
 import com.example.bglib.classes.convertMLKitTextToParcelable
 import com.example.bglib.demos.CardBaseActivity
 import com.example.bglib.demos.DetectedTextBlockActivity

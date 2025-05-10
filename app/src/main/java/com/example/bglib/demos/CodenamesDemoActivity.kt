@@ -6,9 +6,13 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import com.example.bglib.R
-import com.example.bglib.imgproc.CardDetection
-import com.example.bglib.imgproc.ImageProcessing
-import com.example.bglib.imgproc.TextDetection
+import com.example.bglib.imgproc.ModelInterpreter
+import com.example.bglib.imgproc.cards2grid
+import com.example.bglib.imgproc.detectRectCanny
+import com.example.bglib.imgproc.detectRectOtsu
+import com.example.bglib.imgproc.detectTextMLKit
+import com.example.bglib.imgproc.getBoundingBoxes
+import com.example.bglib.imgproc.getRotationCompensation
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.CompletableDeferred
@@ -34,7 +38,7 @@ class CodenamesDemoActivity : CardBaseActivity() {
 
     private var mediaPlayer: MediaPlayer? = null
 
-    private lateinit var modelInterpreter : CardDetection.Companion.ModelInterpreter
+    private lateinit var modelInterpreter : ModelInterpreter
 
     lateinit var button: Button
 
@@ -61,7 +65,7 @@ class CodenamesDemoActivity : CardBaseActivity() {
         }
 
         try {
-            modelInterpreter = CardDetection.Companion.ModelInterpreter(this, "binary_classifier_model.tflite")
+            modelInterpreter = ModelInterpreter(this, "binary_classifier_model.tflite")
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing model interpreter", e)
         }
@@ -79,11 +83,11 @@ class CodenamesDemoActivity : CardBaseActivity() {
         val frame = inputFrame.rgba()
         var rectangles = mutableListOf<MatOfPoint2f>()
         rectangles = when (cardDetectMethod) {
-            "Otsu" -> CardDetection.Companion.detectRectOtsu(frame)
-            "Canny" -> CardDetection.Companion.detectRectCanny(frame)
+            "Otsu" -> detectRectOtsu(frame)
+            "Canny" -> detectRectCanny(frame)
             else -> mutableListOf<MatOfPoint2f>()
         }
-        val boundingBoxes = CardDetection.Companion.getBoundingBoxes(frame, rectangles)
+        val boundingBoxes = getBoundingBoxes(frame, rectangles)
 
         if (boundingBoxes.size == numberOfCards && !activityStarted) {
             // Check if rects are cards
@@ -110,17 +114,17 @@ class CodenamesDemoActivity : CardBaseActivity() {
             mediaPlayer?.start()
 
             // Align cards into the grid
-            val grid = ArrayList(ImageProcessing.Companion.cards2grid(boundingBoxes, rows, cols))
+            val grid = ArrayList(cards2grid(boundingBoxes, rows, cols))
             Log.d(TAG, "Grid: $grid")
 
             // Once all the cards are detected, get rotation and start the OCR
-            val rotation = TextDetection.Companion.getRotationCompensation(CAMERA_ID, this, false)
+            val rotation = getRotationCompensation(CAMERA_ID, this, false)
             CoroutineScope(Dispatchers.Default).launch {
                 grid.forEachIndexed { index, card ->
                     val subframe = Mat(frame, card.boundingBox)
                     val deferredText = async {
                         val textDeferred = CompletableDeferred<String>()
-                        TextDetection.Companion.detectTextMLKit(
+                        detectTextMLKit(
                             subframe,
                             rotation,
                             TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)

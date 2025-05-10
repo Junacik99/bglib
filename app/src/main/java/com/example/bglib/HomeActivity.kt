@@ -41,6 +41,7 @@ import com.example.bglib.demos.ImageSegmentationActivity
 import com.example.bglib.demos.KeyDetectorActivity
 import com.example.bglib.demos.LivesActivity
 import com.example.bglib.demos.ScoreActivity
+import com.example.bglib.demos.TesseractActivity
 import com.example.bglib.demos.TimerActivity
 import com.example.bglib.ui.theme.BglibTheme
 import kotlin.jvm.java
@@ -214,9 +215,9 @@ fun HomeScreen(){
             item {
                 Button(
                     onClick = {
-                        context.startActivity(Intent(context, TestActivity::class.java))
+                        context.startActivity(Intent(context, TesseractActivity::class.java))
                     }) {
-                    Text("Test")
+                    Text("Tesseract")
                 }
             }
 

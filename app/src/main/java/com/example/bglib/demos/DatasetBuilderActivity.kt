@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
 import com.example.bglib.R
-import com.example.bglib.imgproc.CardDetection
-import com.example.bglib.imgproc.Utils
+import com.example.bglib.imgproc.detectRectOtsu
+import com.example.bglib.imgproc.getBoundingBoxes
+import com.example.bglib.imgproc.resizeFrames
+import com.example.bglib.imgproc.saveFrames
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.core.Mat
 
@@ -33,8 +35,8 @@ open class DatasetBuilderActivity
 
     @SuppressLint("NewApi")
     protected fun buttonPressed() {
-        subframes = Utils.Companion.resizeFrames(subframes, frameSize, frameSize)
-        Utils.Companion.saveFrames(subframes, this)
+        subframes = resizeFrames(subframes, frameSize, frameSize)
+        saveFrames(subframes, this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +51,12 @@ open class DatasetBuilderActivity
 
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
-        val rects = CardDetection.Companion.detectRectOtsu(
+        val rects = detectRectOtsu(
             frame,
             drawContours = false,
             drawBoundingBoxes = true
         )
-        val bbs = CardDetection.Companion.getBoundingBoxes(frame, rects)
+        val bbs = getBoundingBoxes(frame, rects)
 
         subframes = bbs.map { rect -> Mat(frame, rect) }.toMutableList()
 

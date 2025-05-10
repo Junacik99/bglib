@@ -10,7 +10,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.bglib.R
-import com.example.bglib.imgproc.Utils
+import com.example.bglib.imgproc.checkCamPermission
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import org.opencv.android.CameraActivity
@@ -66,7 +66,7 @@ open class CardBaseActivity
         // init camera
         initCamera()
 
-        if (Utils.Companion.checkCamPermission(this)) {
+        if (checkCamPermission(this)) {
             Log.d(TAG, "Permissions granted")
             mOpenCvCameraView.setCameraPermissionGranted()
 

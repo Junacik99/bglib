@@ -16,8 +16,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.bglib.R
-import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.imgproc.TextDetection.Companion.detectTextMLKit
+import com.example.bglib.imgproc.detectRectOtsu
+import com.example.bglib.imgproc.detectTextMLKit
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.MainScope

@@ -12,9 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.bglib.R
-import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.imgproc.TextDetection.Companion.detectTextTess
-import com.example.bglib.imgproc.TextDetection.Companion.initTess
+import com.example.bglib.imgproc.detectRectOtsu
+import com.example.bglib.imgproc.detectTextTess
+import com.example.bglib.imgproc.initTess
 import com.googlecode.tesseract.android.TessBaseAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +101,7 @@ class TesseractActivity : CameraActivity(), CvCameraViewListener2 {
         }
 
         // Tess two: Copy tess data
-        val language = "slk"
+        val language = "slk4"
         val dataName = "$language.traineddata"
         baseAPI = initTess(this, dataName, language, TAG)
 
@@ -145,7 +145,7 @@ class TesseractActivity : CameraActivity(), CvCameraViewListener2 {
         }
 
         // Text Recognition using Coroutines
-        // Note: Tesseract is extremely slow not suitable for real-time detection
+        // Note: Tesseract 4 is extremely slow not suitable for real-time detection
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.Main) {
                 detectTextTess(frame.clone(), baseAPI) { detectedText ->

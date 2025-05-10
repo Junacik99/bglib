@@ -39,7 +39,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bglib.imgproc.ImageProcessing.Companion.segment_kmeans
+import com.example.bglib.imgproc.segment_kmeans
 import com.example.bglib.ui.theme.BglibTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,13 +50,13 @@ import java.io.IOException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import androidx.core.graphics.scale
-import com.example.bglib.imgproc.ImageProcessing.Companion.segment_meanshift
+import com.example.bglib.imgproc.segment_meanshift
 import com.google.mediapipe.examples.imagesegmenter.ImageSegmenterHelper
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
-import com.example.bglib.imgproc.ImageProcessing.Companion.BoundingBox
-import com.example.bglib.imgproc.ImageProcessing.Companion.createBoundingBox
-import com.example.bglib.imgproc.ImageProcessing.Companion.segment_deeplab
+import com.example.bglib.imgproc.BoundingBox
+import com.example.bglib.imgproc.createBoundingBox
+import com.example.bglib.imgproc.segment_deeplab
 
 
 class ImageSegmentationActivity : ComponentActivity() {

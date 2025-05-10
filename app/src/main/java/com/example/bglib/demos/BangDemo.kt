@@ -40,11 +40,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
 import com.example.bglib.previews.CameraPreview
-import com.example.bglib.imgproc.CardDetection
-import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.imgproc.CardDetection.Companion.getBoundingBoxes
 import com.example.bglib.fragments.HelpFragment
-import com.example.bglib.imgproc.Utils.Companion.bitmap2mat
+import com.example.bglib.imgproc.ModelInterpreter
+import com.example.bglib.imgproc.bitmap2mat
+import com.example.bglib.imgproc.detectRectOtsu
+import com.example.bglib.imgproc.getBoundingBoxes
 import com.example.bglib.ui.theme.BglibTheme
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
@@ -59,7 +59,7 @@ class BangDemo : AppCompatActivity() {
 
     var isProcessingFrame = false
 
-    private lateinit var modelInterpreter : CardDetection.Companion.ModelInterpreter
+    private lateinit var modelInterpreter : ModelInterpreter
     val modelName = "bang_classifier_224.tflite"
 
     data class bangCard(val name: String, val description: String)
@@ -98,7 +98,7 @@ class BangDemo : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         try {
-            modelInterpreter = CardDetection.Companion.ModelInterpreter(this, modelName, 224, 22)
+            modelInterpreter = ModelInterpreter(this, modelName, 224, 22)
         } catch (e: Exception) {
             e(TAG, "Error initializing model interpreter", e)
         }
