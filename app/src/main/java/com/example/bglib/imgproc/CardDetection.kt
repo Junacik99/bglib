@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.imgproc
 
 import android.content.Context
 import android.util.Log
@@ -21,7 +21,7 @@ class CardDetection {
 
         /*****************************************************************************************/
         /* Model Interpreter */
-        class ModelInterpreter(context: Context, modelName: String, inputSize: Int = 128) {
+        class ModelInterpreter(context: Context, modelName: String, inputSize: Int = 128, val numberOfOutputs: Int = 1) {
             private var interpreter: Interpreter
             private var mInputSize: Int = 0
 
@@ -45,7 +45,7 @@ class CardDetection {
                 }
 
                 // Output buffer
-                val output = Array(1) { FloatArray(1) }
+                val output = Array(1) { FloatArray(numberOfOutputs) }
 
                 // Run inference
                 interpreter.run(inputBuffer, output)

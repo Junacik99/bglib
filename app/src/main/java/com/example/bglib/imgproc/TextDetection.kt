@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.imgproc
 
 import android.app.Activity
 import android.content.Context
@@ -8,7 +8,7 @@ import android.hardware.camera2.CameraManager
 import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
-import com.example.bglib.Utils.Companion.mat2bitmap
+import com.example.bglib.imgproc.Utils.Companion.mat2bitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognizer

@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.previews
 
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView

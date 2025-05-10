@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.demos
 
 import android.Manifest
 import android.app.Activity
@@ -15,8 +15,9 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.bglib.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.TextDetection.Companion.detectTextMLKit
+import com.example.bglib.R
+import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.imgproc.TextDetection.Companion.detectTextMLKit
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.MainScope
@@ -33,7 +34,6 @@ class FirebaseActivity : CameraActivity(), CvCameraViewListener2 {
 
     private val TAG = "OCVSample::Activity"
     private lateinit var mOpenCvCameraView: CameraBridgeViewBase
-    private val cd = CardDetection()
     lateinit var textView: TextView
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private val CAMERA_ID = "0"

@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -40,7 +39,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bglib.ImageProcessing.Companion.segment_kmeans
+import com.example.bglib.imgproc.ImageProcessing.Companion.segment_kmeans
 import com.example.bglib.ui.theme.BglibTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,21 +50,13 @@ import java.io.IOException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import androidx.core.graphics.scale
-import com.example.bglib.ImageProcessing.Companion.segment_meanshift
+import com.example.bglib.imgproc.ImageProcessing.Companion.segment_meanshift
 import com.google.mediapipe.examples.imagesegmenter.ImageSegmenterHelper
-import com.google.mediapipe.framework.image.BitmapImageBuilder
-import com.google.mediapipe.framework.image.ByteBufferExtractor
-import com.google.mediapipe.tasks.core.BaseOptions
-import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter
-import com.google.mediapipe.tasks.vision.imagesegmenter.ImageSegmenter.ImageSegmenterOptions
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
-import com.example.bglib.ImageProcessing.Companion.BoundingBox
-import com.example.bglib.ImageProcessing.Companion.createBoundingBox
-import com.example.bglib.ImageProcessing.Companion.segment_deeplab
-import kotlin.math.max
-import kotlin.math.min
+import com.example.bglib.imgproc.ImageProcessing.Companion.BoundingBox
+import com.example.bglib.imgproc.ImageProcessing.Companion.createBoundingBox
+import com.example.bglib.imgproc.ImageProcessing.Companion.segment_deeplab
 
 
 class ImageSegmentationActivity : ComponentActivity() {
@@ -73,12 +64,6 @@ class ImageSegmentationActivity : ComponentActivity() {
     private lateinit var segmentationExecutor: ExecutorService
     private lateinit var segmentationScope: CoroutineScope
 
-    // private val mediapipeHelper = ImageSegmenterHelper(
-    //     context = applicationContext,
-    //     currentDelegate = ImageSegmenterHelper.DELEGATE_CPU,
-    //     currentModel = ImageSegmenterHelper.MODEL_DEEPLABV3,
-    //     runningMode = RunningMode.IMAGE
-    // )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

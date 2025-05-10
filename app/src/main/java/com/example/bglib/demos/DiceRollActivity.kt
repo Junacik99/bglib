@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.PointF
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.core.CameraSelector
@@ -35,12 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.bglib.CameraPreview
+import com.example.bglib.previews.CameraPreview
 import com.example.bglib.classes.Dice
 import com.example.bglib.classes.Player
 import com.example.bglib.ui.theme.BglibTheme
@@ -136,7 +134,7 @@ class DiceRollActivity : ComponentActivity() {
                 landmarks = newLandmarks
 
                 // Calculate hand center
-                // TODO: landmarks[9] can be used instead to avoid additional computation
+                // Optional: landmarks[9] can be used instead to avoid additional computation
                 var sumX = 0f
                 var sumY = 0f
                 landmarks.forEach { landmark ->

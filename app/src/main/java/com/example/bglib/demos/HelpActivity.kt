@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
-import com.example.bglib.CameraPreview
-import com.example.bglib.HelpFragment
+import com.example.bglib.previews.CameraPreview
+import com.example.bglib.fragments.HelpFragment
 import com.example.bglib.ui.theme.BglibTheme
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

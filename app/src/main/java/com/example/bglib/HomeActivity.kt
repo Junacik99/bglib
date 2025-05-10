@@ -31,6 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bglib.demos.AchievementsActivity
+import com.example.bglib.demos.BangDemo
+import com.example.bglib.demos.CodenamesDemoActivity
+import com.example.bglib.demos.DatasetBuilderActivity
 import com.example.bglib.demos.DiceRollActivity
 import com.example.bglib.demos.HandDetectionActivity
 import com.example.bglib.demos.HelpActivity
@@ -108,7 +111,7 @@ fun HomeScreen(){
             item {
                 Button(
                     onClick = {
-                        val intent = Intent(context, ExampleActivity::class.java)
+                        val intent = Intent(context, CodenamesDemoActivity::class.java)
                         intent.putExtra("rows", rows)
                         intent.putExtra("cols", cols)
                         intent.putExtra("cardDetectMethod", cardDetectMethod)
@@ -121,7 +124,7 @@ fun HomeScreen(){
             item {
                 Button(
                     onClick = {
-                        context.startActivity(Intent(context, CardSavingActivity::class.java))
+                        context.startActivity(Intent(context, DatasetBuilderActivity::class.java))
                     }) {
                     Text("Dataset builder")
                 }
@@ -132,6 +135,15 @@ fun HomeScreen(){
                         context.startActivity(Intent(context, KeyDetectorActivity::class.java))
                     }) {
                     Text("Key Detection")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, BangDemo::class.java))
+                    }
+                ) {
+                    Text("Bang")
                 }
             }
             item {

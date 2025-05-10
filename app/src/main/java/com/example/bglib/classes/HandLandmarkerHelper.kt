@@ -31,7 +31,6 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
-import androidx.core.graphics.createBitmap
 
 class HandLandmarkerHelper(
     var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,

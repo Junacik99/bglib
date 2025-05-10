@@ -10,11 +10,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.bglib.CardBaseActivity
-import com.example.bglib.CardDetection
-import com.example.bglib.ImageProcessing
+import com.example.bglib.imgproc.CardDetection
+import com.example.bglib.imgproc.ImageProcessing
 import com.example.bglib.R
-import com.example.bglib.Utils
+import com.example.bglib.imgproc.Utils
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat

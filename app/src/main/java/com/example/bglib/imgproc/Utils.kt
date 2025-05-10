@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.imgproc
 
 import android.Manifest
 import android.content.ContentValues
@@ -37,7 +37,6 @@ class Utils {
         }
 
         // Save image to MediaStore (Doesn't require permission)
-        @RequiresApi(Build.VERSION_CODES.Q)
         fun saveImageToMediaStore(context: Context, bitmap: Bitmap, displayName: String, mimeType: String): Uri? {
             val values = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
@@ -75,7 +74,6 @@ class Utils {
         }
 
         // Save frame
-        @RequiresApi(Build.VERSION_CODES.Q)
         fun saveFrame(frame: Mat, context: Context){
             // Convert to bitmap
             val bitmap = mat2bitmap(frame)
@@ -98,7 +96,6 @@ class Utils {
         }
 
         // Save multiple frames
-        @RequiresApi(Build.VERSION_CODES.Q)
         fun saveFrames(frames: MutableList<Mat>, context: Context){
             if (frames.isNotEmpty()){
                 for (frame in frames){
@@ -182,20 +179,6 @@ class Utils {
             return mat
         }
 
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun mulPointbyMatOld(point: Point, mat: Mat): Point {
-//            val pointMat = Mat(3, 3, CvType.CV_64F)
-//            pointMat.put(0, 0, point.x)
-//            pointMat.put(0, 1, point.y)
-//            pointMat.put(0, 2, 1.0)
-
-//            val dst = mat.matMul(pointMat)
-//            return Point(dst.get(0,0)[0], dst.get(0, 1)[0])
-
-            val x = mat.get(0, 0)[0] * point.x + mat.get(0, 1)[0] * point.y
-            val y = mat.get(1, 0)[0] * point.x + mat.get(1, 1)[0] * point.y
-            return Point(x, y)
-        }
 
         fun mulPointbyMat(point: Point, mat: Mat): Point {
             // Ensure the transformation matrix is a 2x3

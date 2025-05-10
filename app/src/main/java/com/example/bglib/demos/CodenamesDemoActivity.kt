@@ -1,17 +1,14 @@
-package com.example.bglib
+package com.example.bglib.demos
 
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import com.example.bglib.CardDetection.Companion.detectRectCanny
-import com.example.bglib.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.CardDetection.Companion.getBoundingBoxes
-import com.example.bglib.ImageProcessing.Companion.cards2grid
-import com.example.bglib.TextDetection.Companion.detectTextMLKit
-import com.example.bglib.TextDetection.Companion.getRotationCompensation
-import com.example.bglib.demos.DetectedCardsActivity
+import com.example.bglib.R
+import com.example.bglib.imgproc.CardDetection
+import com.example.bglib.imgproc.ImageProcessing
+import com.example.bglib.imgproc.TextDetection
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.CompletableDeferred
@@ -25,13 +22,12 @@ import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint2f
 import org.opencv.core.Rect
 
-class ExampleActivity : CardBaseActivity() {
+class CodenamesDemoActivity : CardBaseActivity() {
     val context = this
     val TAG = "Example::Activity"
 
     // Get parameters from HomeActivity
     private val cardDetectMethod: String by lazy { intent.extras?.getString("cardDetectMethod", "") ?: "" }
-    // private val ocrMethod: String by lazy { intent.extras?.getString("ocrMethod", "") ?: "" }
     private val rows: Int by lazy { intent.extras?.getInt("rows", 1) ?: 1 }
     private val cols: Int by lazy { intent.extras?.getInt("cols", 1) ?: 1 }
     private var numberOfCards: Int = 0
@@ -83,11 +79,11 @@ class ExampleActivity : CardBaseActivity() {
         val frame = inputFrame.rgba()
         var rectangles = mutableListOf<MatOfPoint2f>()
         rectangles = when (cardDetectMethod) {
-            "Otsu" -> detectRectOtsu(frame)
-            "Canny" -> detectRectCanny(frame)
+            "Otsu" -> CardDetection.Companion.detectRectOtsu(frame)
+            "Canny" -> CardDetection.Companion.detectRectCanny(frame)
             else -> mutableListOf<MatOfPoint2f>()
         }
-        val boundingBoxes = getBoundingBoxes(frame, rectangles)
+        val boundingBoxes = CardDetection.Companion.getBoundingBoxes(frame, rectangles)
 
         if (boundingBoxes.size == numberOfCards && !activityStarted) {
             // Check if rects are cards
@@ -114,17 +110,21 @@ class ExampleActivity : CardBaseActivity() {
             mediaPlayer?.start()
 
             // Align cards into the grid
-            val grid = ArrayList(cards2grid(boundingBoxes, rows, cols))
+            val grid = ArrayList(ImageProcessing.Companion.cards2grid(boundingBoxes, rows, cols))
             Log.d(TAG, "Grid: $grid")
 
             // Once all the cards are detected, get rotation and start the OCR
-            val rotation = getRotationCompensation(CAMERA_ID, this, false)
+            val rotation = TextDetection.Companion.getRotationCompensation(CAMERA_ID, this, false)
             CoroutineScope(Dispatchers.Default).launch {
                 grid.forEachIndexed { index, card ->
                     val subframe = Mat(frame, card.boundingBox)
                     val deferredText = async {
                         val textDeferred = CompletableDeferred<String>()
-                        detectTextMLKit(subframe, rotation, TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)) { detectedText ->
+                        TextDetection.Companion.detectTextMLKit(
+                            subframe,
+                            rotation,
+                            TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                        ) { detectedText ->
                             Log.d(TAG, "For rect $index the text is $detectedText")
                             textDeferred.complete(detectedText.text) // Complete the CompletableDeferred with the detected text
                         }
@@ -145,10 +145,9 @@ class ExampleActivity : CardBaseActivity() {
                     intent.putExtra("numberOfCards", numberOfCards)
                     intent.putExtra("cols", cols)
                     intent.putExtra("rows", rows)
-                    try{
+                    try {
                         intent.putParcelableArrayListExtra("cards", grid)
-                    }
-                    catch (e: Exception){
+                    } catch (e: Exception) {
                         Log.e(TAG, "Error putting cards in intent", e)
                     }
                     context.startActivity(intent)

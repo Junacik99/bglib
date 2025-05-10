@@ -1,4 +1,4 @@
-package com.example.bglib
+package com.example.bglib.demos
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -11,9 +11,11 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.bglib.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.TextDetection.Companion.detectTextTessTwo
-import com.example.bglib.TextDetection.Companion.initTessTwo
+import com.example.bglib.R
+import com.example.bglib.imgproc.CardDetection
+import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
+import com.example.bglib.imgproc.TextDetection.Companion.detectTextTessTwo
+import com.example.bglib.imgproc.TextDetection.Companion.initTessTwo
 import com.googlecode.tesseract.android.TessBaseAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
