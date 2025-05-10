@@ -12,10 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.bglib.R
-import com.example.bglib.imgproc.CardDetection
 import com.example.bglib.imgproc.CardDetection.Companion.detectRectOtsu
-import com.example.bglib.imgproc.TextDetection.Companion.detectTextTessTwo
-import com.example.bglib.imgproc.TextDetection.Companion.initTessTwo
+import com.example.bglib.imgproc.TextDetection.Companion.detectTextTess
+import com.example.bglib.imgproc.TextDetection.Companion.initTess
 import com.googlecode.tesseract.android.TessBaseAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,11 +30,10 @@ import org.opencv.core.Mat
 import androidx.core.content.ContextCompat as ContextCompat1
 
 
-class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
+class TesseractActivity : CameraActivity(), CvCameraViewListener2 {
 
-    private val TAG = "OCVSample::Activity"
+    private val TAG = "Tesseract::Activity"
     private lateinit var mOpenCvCameraView: CameraBridgeViewBase
-    private val cd = CardDetection()
     lateinit var textView: TextView
     private val coroutineScope = MainScope()
     private var baseAPI : TessBaseAPI? = null
@@ -105,7 +103,7 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
         // Tess two: Copy tess data
         val language = "slk"
         val dataName = "$language.traineddata"
-        baseAPI = initTessTwo(this, dataName, language, TAG)
+        baseAPI = initTess(this, dataName, language, TAG)
 
 
     }
@@ -147,10 +145,10 @@ class TessTwoActivity : CameraActivity(), CvCameraViewListener2 {
         }
 
         // Text Recognition using Coroutines
-        // TODO: Tess Two is extremely slow not suitable for real-time detection
+        // Note: Tesseract is extremely slow not suitable for real-time detection
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.Main) {
-                detectTextTessTwo(frame.clone(), baseAPI) { detectedText ->
+                detectTextTess(frame.clone(), baseAPI) { detectedText ->
                     textView.text = detectedText
                 }
             }

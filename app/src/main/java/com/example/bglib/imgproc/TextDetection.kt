@@ -86,9 +86,9 @@ class TextDetection {
             }
 
 
-        /* Tess Two */
+        /* Tesseract */
 
-        fun initTessTwo(
+        fun initTess(
             context: Context,
             dataName : String,
             lang : String,
@@ -129,7 +129,7 @@ class TextDetection {
             return baseAPI
         }
 
-        fun detectTextTessTwo(frame: Mat, api: TessBaseAPI?, onResult: (String) -> Unit){
+        fun detectTextTess(frame: Mat, api: TessBaseAPI?, onResult: (String) -> Unit){
             // create bitmap
             val bmp = mat2bitmap(frame)
 
