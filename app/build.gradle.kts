@@ -60,5 +60,5 @@ dependencies {
 
     // Include my library
     // implementation(project(":bglib"))
-    implementation("com.github.Junacik99:dip:1.0")
+    // implementation("com.github.Junacik99:dip:1.0")
 }
