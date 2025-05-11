@@ -88,16 +88,16 @@ dependencies {
     implementation(libs.fragment.ktx)
 }
 
-// publishing {
-//     publications {
-//         register<MavenPublication>("release") {
-//             groupId = "com.github.Junacik99"
-//             artifactId = "bglib"
-//             version = "1.1"
-//
-//             afterEvaluate {
-//                 from(components["release"])
-//             }
-//         }
-//     }
-// }
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.Junacik99"
+            artifactId = "bglib"
+            version = "1.2"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+}
