@@ -64,5 +64,5 @@ dependencies {
     // Uncomment when making new Release:
     // implementation(project(":bglib"))
     // Comment when making new Release:
-    implementation("com.github.Junacik99:dip:1.7")
+    implementation(libs.dip)
 }

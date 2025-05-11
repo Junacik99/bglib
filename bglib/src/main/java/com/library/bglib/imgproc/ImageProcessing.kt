@@ -448,13 +448,13 @@ fun segment_meanshift(
 }
 
 // Image segmentation using deeplabV3 and mediapipe
-fun segment_deeplab(img: Bitmap, context: Context): ByteArray {
+fun segment_deeplab(img: Bitmap, context: Context, modelPath: String = "deeplab_v3.tflite"): ByteArray {
     // Create the segmenter object from options
     // set running mode, output type and model path
     val options =
         ImageSegmenterOptions.builder()
             .setBaseOptions(
-                BaseOptions.builder().setModelAssetPath("deeplab_v3.tflite").build())
+                BaseOptions.builder().setModelAssetPath(modelPath).build())
             .setRunningMode(RunningMode.IMAGE)
             .setOutputCategoryMask(true)
             .setOutputConfidenceMasks(false)
