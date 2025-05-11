@@ -58,7 +58,8 @@ dependencies {
     implementation(libs.androidx.material3)
 
 
+
     // Include my library
-    // implementation(project(":bglib"))
+    implementation(project(":bglib"))
     // implementation("com.github.Junacik99:dip:1.0")
 }
