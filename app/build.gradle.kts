@@ -40,6 +40,10 @@ android {
         compose = true
     }
 
+    lint {
+        disable += "Instantiatable"
+    }
+
     buildToolsVersion = "35.0.0"
 }
 

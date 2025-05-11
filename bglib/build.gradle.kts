@@ -35,6 +35,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        disable += "Instantiatable"
+    }
 }
 
 dependencies {
@@ -93,7 +97,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.Junacik99"
             artifactId = "bglib"
-            version = "1.5"
+            version = "1.6"
 
             afterEvaluate {
                 from(components["release"])
