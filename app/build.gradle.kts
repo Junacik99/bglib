@@ -4,7 +4,6 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.9.22"
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
-    // `maven-publish`
 }
 
 android {

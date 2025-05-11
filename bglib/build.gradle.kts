@@ -1,7 +1,11 @@
+import io.netty.util.ReferenceCountUtil.release
+import org.gradle.kotlin.dsl.release
+
 plugins {
     alias(libs.plugins.android.library)
     id("org.jetbrains.kotlin.android") version "1.9.22"
     alias(libs.plugins.kotlin.compose)
+    `maven-publish`
 }
 
 android {
@@ -85,4 +89,18 @@ dependencies {
 
     implementation(libs.androidx.fragment.v186)
     implementation(libs.fragment.ktx)
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.Junacik99"
+            artifactId = "bglib"
+            version = "1.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
