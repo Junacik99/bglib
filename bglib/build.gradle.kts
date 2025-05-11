@@ -1,24 +1,18 @@
 plugins {
-    alias(libs.plugins.android.application)
-    //noinspection GradleDependency
+    alias(libs.plugins.android.library)
     id("org.jetbrains.kotlin.android") version "1.9.22"
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.gms.google.services)
-    // `maven-publish`
 }
 
 android {
-    namespace = "com.junacik.bglib"
+    namespace = "com.library.bglib"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.bglib"
         minSdk = 30
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -28,9 +22,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        create("customDebugType") {
-            isDebuggable = true
         }
     }
     compileOptions {
@@ -43,22 +34,20 @@ android {
     buildFeatures {
         compose = true
     }
-
-    // testFixtures {
-    //     enable = true
-    // }
-
-    // publishing {
-    //     singleVariant("release") {
-    //         withSourcesJar()
-    //         withJavadocJar()
-    //     }
-    // }
-
-    buildToolsVersion = "35.0.0"
 }
 
 dependencies {
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.runtime.rxjava2)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -96,7 +85,4 @@ dependencies {
 
     implementation(libs.androidx.fragment.v186)
     implementation(libs.fragment.ktx)
-
-//     Include my library
-    implementation(project(":bglib"))
 }
