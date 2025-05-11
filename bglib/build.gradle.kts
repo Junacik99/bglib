@@ -97,7 +97,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.Junacik99"
             artifactId = "bglib"
-            version = "1.6"
+            version = "1.7"
 
             afterEvaluate {
                 from(components["release"])
