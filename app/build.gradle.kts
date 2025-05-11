@@ -44,17 +44,6 @@ android {
         compose = true
     }
 
-    // testFixtures {
-    //     enable = true
-    // }
-
-    // publishing {
-    //     singleVariant("release") {
-    //         withSourcesJar()
-    //         withJavadocJar()
-    //     }
-    // }
-
     buildToolsVersion = "35.0.0"
 }
 
@@ -68,35 +57,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.tess.two)
-    implementation(libs.mfl.core)
-    implementation(libs.litert)
-    implementation(libs.play.services.mlkit.text.recognition.common)
-    implementation(libs.play.services.mlkit.text.recognition)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(kotlin("script-runtime"))
-    implementation(libs.kotlin.script.runtime)
-    implementation(libs.opencv)
-    implementation(libs.tasks.vision)
 
-    implementation(libs.androidx.camera.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.video)
 
-    implementation(libs.androidx.camera.view)
-    implementation(libs.androidx.camera.extensions)
-
-    implementation(libs.androidx.fragment.v186)
-    implementation(libs.fragment.ktx)
-
-//     Include my library
+    // Include my library
     implementation(project(":bglib"))
 }

@@ -1,8 +1,3 @@
-import org.opencv.core.Core
-import org.opencv.core.CvType
-import org.opencv.core.Mat
-
-
 data class Pixel(val red: UByte, val green: UByte, val blue: UByte)
 
 fun encode(img:  Array<Array<Pixel>>): IntArray {

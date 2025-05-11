@@ -92,15 +92,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TestActivity"
-            android:exported="false"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Bglib">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name="com.library.bglib.demos.DetectedTextBlockActivity"
             android:exported="false"
             android:label="@string/app_name"
