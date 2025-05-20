@@ -1,6 +1,6 @@
 # Smart Assistants for Board Games
 *BGLIB* is an Android library for the development of smart assistants
-for board games (board games library). It utilise various computer
+for board games (board games library). It utilises various computer
 vision techniques and machine learning algorithms. Packages like OpenCV,
 ML Kit and Mediapipe are already integrated.
 
