@@ -17,7 +17,7 @@ The library is split into $5$ main packages:
 
 -   previews.
 
-To integrate a library into a project a user need to add the jitpack
+To integrate a library into a project a user needs to add the jitpack
 repository into `settings.gradle.kts` as follows:
 
     dependencyResolutionManagement {
