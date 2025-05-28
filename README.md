@@ -4,6 +4,8 @@ for board games (board games library). It utilises various computer
 vision techniques and machine learning algorithms. Packages like OpenCV,
 ML Kit and Mediapipe are already integrated.
 
+Minimum SDK version: 30
+
 ## Installation
 To integrate a library into a project a user needs to add the jitpack
 repository into `settings.gradle.kts` as follows:
